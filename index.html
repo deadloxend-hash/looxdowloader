@@ -1,501 +1,1017 @@
+
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LOOX Downloader</title>
-
+  <meta name="theme-color" content="#0b0f19">
+  <meta name="description" content="Loox is a simple media link tool for supported public Instagram, X, TikTok and Pinterest content. Respect creators' rights.">
+  <title>LOOX Downloader — Instagram, X, TikTok & Pinterest</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              purple: '#833AB4', pink: '#FD1D1D', orange: '#F56040',
+              darkBg: '#0b0f19', cardBg: '#151c2e', cardBorder: '#232d48'
+            }
+          },
+          fontFamily: { sans: ['Inter', 'sans-serif'] }
+        }
+      }
+    };
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: Inter, sans-serif; background:#0b0f19; color:#f3f4f6; min-height:100vh; }
+    .ig-gradient-text { background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .ig-gradient-bg { background:linear-gradient(135deg,#833AB4 0%,#FD1D1D 50%,#FCB045 100%); }
+    .ig-gradient-btn { background:linear-gradient(45deg,#833AB4,#FD1D1D,#F56040); background-size:200% 200%; transition:all .25s ease; }
+    .ig-gradient-btn:hover { background-position:right center; box-shadow:0 10px 20px -5px rgba(253,29,29,.35); transform:translateY(-1px); }
+    .glass-card { background:rgba(21,28,46,.72); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.09); }
+    .platform-btn { border:1px solid #303b55; background:rgba(15,23,42,.6); color:#cbd5e1; transition:all .2s ease; }
+    .platform-btn:hover { border-color:#a855f7; color:#fff; }
+    .platform-btn.active { color:#fff; border-color:#d946ef; background:linear-gradient(120deg,rgba(131,58,180,.25),rgba(253,29,29,.12)); box-shadow:0 0 0 1px rgba(217,70,239,.12) inset; }
+    .platform-btn.active .platform-icon { color:#f0abfc; }
+    .faq-card { background:rgba(21,28,46,.58); border:1px solid rgba(255,255,255,.09); }
+    details summary { cursor:pointer; list-style:none; }
+    details summary::-webkit-details-marker { display:none; }
+    details[open] .faq-arrow { transform:rotate(180deg); }
+    .faq-arrow { transition:transform .2s; }
+    @keyframes pulseGlow { 0%,100%{opacity:.35} 50%{opacity:.7} }
+    .glow-bg { animation:pulseGlow 6s infinite ease-in-out; }
+    ::-webkit-scrollbar { width:8px; }
+    ::-webkit-scrollbar-track { background:#0b0f19; }
+    ::-webkit-scrollbar-thumb { background:#232d48; border-radius:4px; }
+    ::-webkit-scrollbar-thumb:hover { background:#FD1D1D; }
 
-    body {
-      margin: 0;
-      font-family: Inter, Arial, sans-serif;
-      background: #0b0f19;
-      color: #f3f4f6;
+    /* Download result card */
+    .media-preview-card {
+      background: linear-gradient(145deg, rgba(21,28,46,.98), rgba(11,15,25,.98));
+      border: 1px solid rgba(168,85,247,.3);
+      border-radius: 18px;
+      overflow: hidden;
     }
-
-    .glass-card {
-      background: rgba(21, 28, 46, 0.82);
+    .media-preview-image {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      background: #111827;
+      border-radius: 12px;
     }
-
-    .ig-gradient-btn {
-      background: linear-gradient(
-        135deg,
-        #833AB4 0%,
-        #FD1D1D 50%,
-        #FCB045 100%
-      );
+    .media-preview-placeholder {
+      aspect-ratio: 16 / 10;
+      background: linear-gradient(135deg,#1f2937,#111827);
+      border-radius: 12px;
     }
-
-    .ig-gradient-text {
-      background: linear-gradient(
-        45deg,
-        #f09433,
-        #dc2743,
-        #bc1888
-      );
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .platform-btn {
-      border: 1px solid #374151;
-      background: rgba(31, 41, 55, 0.6);
-      color: white;
-      cursor: pointer;
-    }
-
-    .platform-btn.active {
-      border-color: #ec4899;
-      background: rgba(236, 72, 153, 0.12);
-    }
-
-    .rule-check {
-      color: #34d399;
-    }
-
-    .faq-card {
-      background: rgba(21, 28, 46, 0.7);
-      border: 1px solid #232d48;
-    }
-
-    a {
-      text-decoration: none;
+    .media-caption {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
     }
   </style>
 </head>
 
-<body>
+<body class="flex flex-col min-h-screen relative overflow-x-hidden selection:bg-pink-500 selection:text-white">
+  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-orange-500/20 blur-[120px] pointer-events-none rounded-full glow-bg" aria-hidden="true"></div>
 
-  <!-- HEADER -->
-  <header class="px-4 py-5 border-b border-gray-800">
-    <nav class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
-
-      <a href="#" aria-label="LOOX Downloader"
-         class="text-2xl font-black text-white">
-        LOOX
-        <span class="ig-gradient-text">DOWNLOADER</span>
+  <header class="sticky top-0 z-40 w-full border-b border-gray-800/80 bg-brand-darkBg/90 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-3 flex items-center justify-between gap-3">
+      <a href="#" class="flex items-center gap-3 group" aria-label="Loox Downloader home">
+        <div class="w-11 h-11 rounded-2xl ig-gradient-bg flex items-center justify-center text-white shadow-lg shadow-pink-500/20 transition-transform group-hover:scale-105">
+          <i class="fa-solid fa-download text-xl"></i>
+        </div>
+        <div class="leading-none">
+          <span class="block text-2xl font-black tracking-tight text-white">LOOX</span>
+          <span class="block text-[9px] uppercase tracking-[.25em] font-bold text-gray-400 mt-1">DOWNLOADER</span>
+        </div>
       </a>
-
-      <div class="flex flex-wrap gap-4 text-sm text-gray-300">
-        <a href="#downloader">Downloader</a>
-        <a href="#how-it-works">How it Works</a>
-        <a href="#rules">Usage Rules</a>
-        <a href="#faq">FAQ</a>
-      </div>
-
-      <a href="#platforms" class="text-sm text-gray-300">
-        Platforms
+      <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300" aria-label="Main navigation">
+        <a href="#downloader" class="hover:text-pink-400 transition-colors">Downloader</a>
+        <a href="#how-it-works" class="hover:text-pink-400 transition-colors">How it Works</a>
+        <a href="#rules" class="hover:text-pink-400 transition-colors">Usage Rules</a>
+        <a href="#faq" class="hover:text-pink-400 transition-colors">FAQ</a>
+      </nav>
+      <a href="#platforms" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg border border-gray-700 bg-gray-800/80 hover:bg-gray-700 text-gray-200 transition-all flex items-center gap-2">
+        <i class="fa-solid fa-layer-group"></i><span>Platforms</span>
       </a>
-
-    </nav>
+    </div>
   </header>
 
-  <main>
-
-    <!-- DOWNLOADER SECTION -->
-    <section id="downloader" class="text-center px-4 py-14 sm:py-20">
-
-      <p class="text-xs tracking-widest text-pink-300 font-bold mb-4">
+  <main class="flex-grow relative z-10">
+    <section id="downloader" class="pt-12 sm:pt-16 pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto text-center">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-pink-500/30 bg-pink-500/10 text-pink-300 text-xs font-semibold mb-6">
+        <span class="flex h-2 w-2 rounded-full bg-pink-500 animate-pulse"></span>
         SIMPLE · FAST · MOBILE FRIENDLY
-      </p>
-
-      <h1 class="text-4xl sm:text-6xl font-black text-white mb-4">
-        Your media,
-        <span class="ig-gradient-text">one place.</span>
-      </h1>
-
-      <p class="text-gray-400 max-w-2xl mx-auto mb-8">
-        Choose a platform and paste a public media link.
-        Loox will show download options when that platform
-        is supported by the connected backend.
-      </p>
-
-      <!-- PLATFORM BUTTONS -->
-      <div id="platforms"
-           class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto mb-5"
-           role="group"
-           aria-label="Choose a platform">
-
-        <button type="button"
-                class="platform-btn active rounded-xl p-4 flex flex-col items-center gap-2"
-                data-platform="instagram"
-                aria-pressed="true">
-          <i class="fa-brands fa-instagram text-2xl"></i>
-          <span class="font-semibold text-sm">Instagram Reels</span>
-        </button>
-
-        <button type="button"
-                class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2"
-                data-platform="x"
-                aria-pressed="false">
-          <i class="fa-brands fa-x-twitter text-2xl"></i>
-          <span class="font-semibold text-sm">X</span>
-        </button>
-
-        <button type="button"
-                class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2"
-                data-platform="pinterest"
-                aria-pressed="false">
-          <i class="fa-brands fa-pinterest-p text-2xl"></i>
-          <span class="font-semibold text-sm">Pinterest</span>
-        </button>
-
-        <button type="button"
-                class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2"
-                data-platform="tiktok"
-                aria-pressed="false">
-          <i class="fa-brands fa-tiktok text-2xl"></i>
-          <span class="font-semibold text-sm">TikTok</span>
-        </button>
-
       </div>
 
-      <!-- LINK INPUT -->
+      <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-white mb-5">
+        Your media, <span class="ig-gradient-text">one place.</span>
+      </h1>
+      <p class="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-8">
+        Choose a platform and paste a public media link. Loox will show download options when that platform is supported by the connected backend.
+      </p>
+
+      <div id="platforms" class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto mb-5" role="group" aria-label="Choose a platform">
+        <button type="button" class="platform-btn active rounded-xl p-4 flex flex-col items-center gap-2" data-platform="instagram" aria-pressed="true">
+          <i class="platform-icon fa-brands fa-instagram text-2xl"></i><span class="font-semibold text-sm">Instagram Reels</span>
+        </button>
+        <button type="button" class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2" data-platform="x" aria-pressed="false">
+          <i class="platform-icon fa-brands fa-x-twitter text-2xl"></i><span class="font-semibold text-sm">X</span>
+        </button>
+        <button type="button" class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2" data-platform="pinterest" aria-pressed="false">
+          <i class="platform-icon fa-brands fa-pinterest-p text-2xl"></i><span class="font-semibold text-sm">Pinterest</span>
+        </button>
+        <button type="button" class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2" data-platform="tiktok" aria-pressed="false">
+          <i class="platform-icon fa-brands fa-tiktok text-2xl"></i><span class="font-semibold text-sm">TikTok</span>
+        </button>
+      </div>
+
       <div class="glass-card p-3 sm:p-4 rounded-2xl shadow-2xl border border-gray-700/60 max-w-3xl mx-auto">
-
         <form id="downloadForm" class="space-y-3">
-
           <div class="relative flex flex-col sm:flex-row items-center gap-2">
-
             <div class="relative w-full">
-
-              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                <i class="fa-solid fa-link text-lg"></i>
-              </div>
-
-              <input
-                type="url"
-                id="mediaUrl"
-                placeholder="Paste Instagram Reel link here..."
-                class="w-full pl-11 pr-24 py-4 bg-gray-900/90 text-white placeholder-gray-500 rounded-xl border border-gray-700 focus:border-pink-500 focus:outline-none text-sm sm:text-base"
-                autocomplete="url"
-                autocapitalize="off"
-                spellcheck="false"
-                aria-label="Media URL"
-                required
-              >
-
+              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400"><i class="fa-solid fa-link text-lg"></i></div>
+              <input type="url" id="mediaUrl" placeholder="Paste Instagram Reel link here..." class="w-full pl-11 pr-24 py-4 bg-gray-900/90 text-white placeholder-gray-500 rounded-xl border border-gray-700 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm sm:text-base" autocomplete="url" autocapitalize="off" spellcheck="false" aria-label="Media URL" required>
               <div class="absolute inset-y-0 right-0 pr-2 flex items-center gap-1">
-
-                <button type="button"
-                        id="clearBtn"
-                        class="hidden p-2 text-gray-400 hover:text-white"
-                        title="Clear text"
-                        aria-label="Clear URL">
-                  <i class="fa-solid fa-xmark"></i>
-                </button>
-
-                <button type="button"
-                        id="pasteBtn"
-                        class="px-2.5 py-1.5 text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg border border-gray-600 flex items-center gap-1.5"
-                        title="Paste from clipboard">
-                  <i class="fa-regular fa-clipboard"></i>
-                  <span class="hidden sm:inline">Paste</span>
-                </button>
-
+                <button type="button" id="clearBtn" class="hidden p-2 text-gray-400 hover:text-white transition-colors" title="Clear text" aria-label="Clear URL"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" id="pasteBtn" class="px-2.5 py-1.5 text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg border border-gray-600 transition-all flex items-center gap-1.5" title="Paste from clipboard"><i class="fa-regular fa-clipboard"></i><span class="hidden sm:inline">Paste</span></button>
               </div>
             </div>
-
-            <button type="submit"
-                    id="fetchBtn"
-                    class="w-full sm:w-auto px-8 py-4 ig-gradient-btn text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 shrink-0 text-base">
-              <span id="fetchBtnText">Get Media</span>
-              <i id="fetchBtnIcon" class="fa-solid fa-arrow-right"></i>
+            <button type="submit" id="fetchBtn" class="w-full sm:w-auto px-8 py-4 ig-gradient-btn text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 shrink-0 text-base">
+              <span id="fetchBtnText">Get Media</span><i id="fetchBtnIcon" class="fa-solid fa-arrow-right"></i>
             </button>
-
           </div>
         </form>
 
-        <!-- ERROR MESSAGE -->
-        <div id="errorMessage"
-             role="alert"
-             aria-live="polite"
-             class="hidden mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-sm text-left">
-          <i class="fa-solid fa-circle-exclamation"></i>
-          <span id="errorText"></span>
+        <div id="errorMessage" role="alert" aria-live="polite" class="hidden mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-xs sm:text-sm text-left flex items-start gap-2">
+          <i class="fa-solid fa-circle-exclamation shrink-0 mt-0.5"></i><span id="errorText"></span>
         </div>
 
-        <!-- SUCCESS MESSAGE -->
-        <div id="successMessage"
-             role="status"
-             aria-live="polite"
-             class="hidden mt-3 p-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-300 text-sm text-left">
-        </div>
+        <!-- The result card is created here by JavaScript. -->
+        <div id="successMessage" role="status" aria-live="polite" class="hidden mt-4 text-left"></div>
 
-        <p class="mt-3 text-xs text-gray-500">
-          Only use links you have permission to save.
-          Private content and access-control bypasses are not supported.
-        </p>
-
+        <p class="mt-3 text-xs text-gray-500">Only use links you have permission to save. Private content and access-control bypasses are not supported.</p>
       </div>
 
       <div class="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-gray-400">
-        <span><i class="fa-solid fa-check text-green-400"></i> Public links only</span>
-        <span><i class="fa-solid fa-shield-halved text-sky-400"></i> Respect creator rights</span>
-        <span><i class="fa-solid fa-mobile-screen text-purple-400"></i> Mobile friendly</span>
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-check text-green-400"></i> Public links only</span>
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-sky-400"></i> Respect creator rights</span>
+        <span class="flex items-center gap-1.5"><i class="fa-solid fa-mobile-screen text-purple-400"></i> Mobile friendly</span>
       </div>
-
     </section>
 
-    <!-- HOW TO USE -->
-    <section id="how-it-works"
-             class="py-14 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto border-t border-gray-800/60">
-
+    <section id="how-it-works" class="py-14 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto border-t border-gray-800/60">
       <div class="text-center mb-9">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
-          How to Use Loox
-        </h2>
-        <p class="text-gray-400 text-sm mt-2">
-          Three simple steps
-        </p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">How to Use Loox</h2>
+        <p class="text-gray-400 text-sm mt-2">Three simple steps</p>
       </div>
-
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-
-        <article class="glass-card p-6 rounded-2xl">
-          <div class="text-pink-400 text-xl mb-4">
-            <i class="fa-solid fa-copy"></i>
-          </div>
-          <h3 class="text-lg font-bold text-white mb-2">
-            1. Copy a Link
-          </h3>
-          <p class="text-gray-400 text-sm leading-relaxed">
-            Open a public post or media item and copy its link
-            using the platform's sharing option.
-          </p>
+        <article class="glass-card p-6 rounded-2xl hover:border-pink-500/40 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/30 text-pink-400 flex items-center justify-center text-xl font-bold mb-4"><i class="fa-solid fa-copy"></i></div>
+          <h3 class="text-lg font-bold text-white mb-2">1. Copy a Link</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Open a public post or media item and copy its link using the platform's sharing option.</p>
         </article>
-
-        <article class="glass-card p-6 rounded-2xl">
-          <div class="text-purple-400 text-xl mb-4">
-            <i class="fa-solid fa-link"></i>
-          </div>
-          <h3 class="text-lg font-bold text-white mb-2">
-            2. Paste into Loox
-          </h3>
-          <p class="text-gray-400 text-sm leading-relaxed">
-            Select Instagram Reels, X, Pinterest, or TikTok,
-            then paste the link into the box.
-          </p>
+        <article class="glass-card p-6 rounded-2xl hover:border-pink-500/40 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xl font-bold mb-4"><i class="fa-solid fa-link"></i></div>
+          <h3 class="text-lg font-bold text-white mb-2">2. Paste into Loox</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Select Instagram Reels, X, Pinterest, or TikTok, then paste the link into the box.</p>
         </article>
-
-        <article class="glass-card p-6 rounded-2xl">
-          <div class="text-orange-400 text-xl mb-4">
-            <i class="fa-solid fa-download"></i>
-          </div>
-          <h3 class="text-lg font-bold text-white mb-2">
-            3. Get Available Media
-          </h3>
-          <p class="text-gray-400 text-sm leading-relaxed">
-            If the platform's backend integration supports the link,
-            follow the available file option.
-            Unsupported links will show an error.
-          </p>
+        <article class="glass-card p-6 rounded-2xl hover:border-pink-500/40 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/30 text-orange-400 flex items-center justify-center text-xl font-bold mb-4"><i class="fa-solid fa-download"></i></div>
+          <h3 class="text-lg font-bold text-white mb-2">3. Get Available Media</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">Preview the available media details and open the returned media link to save it.</p>
         </article>
-
       </div>
     </section>
 
-    <!-- FEATURES -->
-    <section id="features"
-             class="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-14">
-
+    <section id="features" class="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto pb-14">
       <div class="text-center mb-8">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
-          Why Use Loox?
-        </h2>
-        <p class="text-gray-400 text-sm mt-2">
-          A straightforward experience without unnecessary clutter
-        </p>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Why Use Loox?</h2>
+        <p class="text-gray-400 text-sm mt-2">A straightforward experience without unnecessary clutter</p>
       </div>
-
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-
-        <article class="glass-card p-5 rounded-xl">
-          <i class="fa-solid fa-mobile-screen-button text-pink-400 text-xl"></i>
-          <h3 class="font-bold text-white mt-3 mb-1">Mobile Friendly</h3>
-          <p class="text-sm text-gray-400">
-            Responsive layout for phones, tablets, and desktop screens.
-          </p>
-        </article>
-
-        <article class="glass-card p-5 rounded-xl">
-          <i class="fa-solid fa-link text-purple-400 text-xl"></i>
-          <h3 class="font-bold text-white mt-3 mb-1">Link Checks</h3>
-          <p class="text-sm text-gray-400">
-            Checks the link's platform and format before sending it to the backend.
-          </p>
-        </article>
-
-        <article class="glass-card p-5 rounded-xl">
-          <i class="fa-solid fa-circle-exclamation text-orange-400 text-xl"></i>
-          <h3 class="font-bold text-white mt-3 mb-1">Clear Feedback</h3>
-          <p class="text-sm text-gray-400">
-            Shows helpful messages when a link is invalid or a service is unavailable.
-          </p>
-        </article>
-
+        <article class="glass-card p-5 rounded-xl"><div class="text-pink-400 text-xl mb-3"><i class="fa-solid fa-mobile-screen-button"></i></div><h3 class="font-bold text-white mb-1">Mobile Friendly</h3><p class="text-sm text-gray-400">Responsive layout for phones, tablets, and desktop screens.</p></article>
+        <article class="glass-card p-5 rounded-xl"><div class="text-purple-400 text-xl mb-3"><i class="fa-solid fa-link"></i></div><h3 class="font-bold text-white mb-1">Link Checks</h3><p class="text-sm text-gray-400">Checks the link's platform and format before sending it to the backend.</p></article>
+        <article class="glass-card p-5 rounded-xl"><div class="text-orange-400 text-xl mb-3"><i class="fa-solid fa-circle-exclamation"></i></div><h3 class="font-bold text-white mb-1">Clear Feedback</h3><p class="text-sm text-gray-400">Shows helpful messages when a link is invalid or a service is unavailable.</p></article>
       </div>
     </section>
 
-    <!-- USAGE RULES -->
     <section id="rules" class="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto pb-14">
-
       <div class="glass-card rounded-2xl p-6 sm:p-8">
-        <h2 class="text-2xl font-extrabold mb-2">Usage Rules</h2>
-        <p class="text-sm text-gray-400 mb-5">Use Loox responsibly</p>
-
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-300"><i class="fa-solid fa-shield-halved text-xl"></i></div>
+          <div><h2 class="text-2xl font-extrabold">Usage Rules</h2><p class="text-sm text-gray-400">Use Loox responsibly</p></div>
+        </div>
         <ul class="space-y-3 text-sm text-gray-300">
-          <li>✓ Only submit public links that you are authorized to access and save.</li>
-          <li>✓ Respect copyright, creator permissions, and platform terms.</li>
-          <li>✓ Do not impersonate creators or violate anyone's privacy.</li>
-          <li>✓ Do not bypass private accounts, logins, or access controls.</li>
-          <li>✓ Availability depends on the platform and backend integration.</li>
+          <li class="flex gap-3"><i class="fa-solid fa-check rule-check mt-1"></i><span>Only submit public links that you are authorized to access and save.</span></li>
+          <li class="flex gap-3"><i class="fa-solid fa-check rule-check mt-1"></i><span>Respect copyright, creator permissions, and the terms of the source platform.</span></li>
+          <li class="flex gap-3"><i class="fa-solid fa-check rule-check mt-1"></i><span>Do not use Loox to impersonate creators, redistribute content without permission, or violate anyone's privacy.</span></li>
+          <li class="flex gap-3"><i class="fa-solid fa-check rule-check mt-1"></i><span>Do not attempt to access private accounts, bypass logins, defeat technical restrictions, or download content you are not permitted to access.</span></li>
+          <li class="flex gap-3"><i class="fa-solid fa-check rule-check mt-1"></i><span>Availability depends on each platform and the backend integration. Loox does not promise every link will work.</span></li>
         </ul>
       </div>
-
     </section>
 
-    <!-- PRIVACY -->
     <section id="privacy" class="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto pb-14">
-
       <div class="glass-card rounded-2xl p-6 sm:p-8">
-        <h2 class="text-2xl font-extrabold mb-4">Privacy &amp; Copyright</h2>
-
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-11 h-11 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-300"><i class="fa-solid fa-user-shield text-xl"></i></div>
+          <div><h2 class="text-2xl font-extrabold">Privacy & Copyright</h2><p class="text-sm text-gray-400">Plain-language summary</p></div>
+        </div>
         <div class="space-y-4 text-sm text-gray-300 leading-relaxed">
-          <p>
-            <strong class="text-white">Links and data:</strong>
-            Do not paste passwords, private messages, or other sensitive information.
-            Submitted URLs may be sent to the configured backend.
-          </p>
-
-          <p>
-            <strong class="text-white">Cookies and analytics:</strong>
-            Review any third-party services added to the site and update this notice accordingly.
-          </p>
-
-          <p>
-            <strong class="text-white">Copyright requests:</strong>
-            Provide a real support contact for copyright concerns before public launch.
-          </p>
-
-          <p>
-            <strong class="text-white">Important:</strong>
-            This is a starter policy, not legal advice.
-          </p>
+          <p><strong class="text-white">Links and data:</strong> Do not paste passwords, private messages, or other sensitive information. A submitted URL may be sent to the configured backend to process your request. The backend operator's logs and retention practices should be reviewed before public launch.</p>
+          <p><strong class="text-white">Cookies and analytics:</strong> This page does not add analytics or advertising scripts itself. If analytics, advertising, or other third-party services are added later, update this notice to explain what they collect and provide any required choices or consent.</p>
+          <p><strong class="text-white">Copyright requests:</strong> If you own content shown or processed through Loox and have a concern, contact the site operator with the relevant URL and explanation. Add a real support email before publishing this page publicly.</p>
+          <p><strong class="text-white">Important:</strong> This is a starter policy, not legal advice. Review it for your actual backend, hosting, analytics, advertising, and local legal requirements before launch.</p>
         </div>
       </div>
-
     </section>
 
-    <!-- FAQ -->
     <section id="faq" class="px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto pb-16">
-
-      <h2 class="text-2xl sm:text-3xl font-extrabold text-white text-center mb-3">
-        Frequently Asked Questions
-      </h2>
-
-      <p class="text-gray-400 text-sm text-center mb-8">
-        Quick answers about using Loox
-      </p>
-
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-white text-center mb-3">Frequently Asked Questions</h2>
+      <p class="text-gray-400 text-sm text-center mb-8">Quick answers about using Loox</p>
       <div class="space-y-3">
-
         <details class="faq-card rounded-xl p-4">
-          <summary class="font-semibold text-white">
-            Which platforms does Loox support?
-          </summary>
-          <p class="text-sm text-gray-400 mt-3">
-            The interface offers Instagram Reels, X, Pinterest, and TikTok.
-            Each requires a working backend integration.
-          </p>
+          <summary class="font-semibold text-white flex items-center justify-between gap-4">Which platforms does Loox support? <i class="faq-arrow fa-solid fa-chevron-down text-gray-400 text-xs"></i></summary>
+          <p class="text-sm text-gray-400 mt-3 leading-relaxed">The interface offers Instagram Reels, X, Pinterest, and TikTok. A platform will only work when its server-side extraction integration is implemented and operating correctly.</p>
         </details>
-
         <details class="faq-card rounded-xl p-4">
-          <summary class="font-semibold text-white">
-            Why did my link fail?
-          </summary>
-          <p class="text-sm text-gray-400 mt-3">
-            The URL may be invalid, the post may be unavailable,
-            or the backend may not support that link.
-          </p>
+          <summary class="font-semibold text-white flex items-center justify-between gap-4">Why did my link fail? <i class="faq-arrow fa-solid fa-chevron-down text-gray-400 text-xs"></i></summary>
+          <p class="text-sm text-gray-400 mt-3 leading-relaxed">The URL may be invalid, the post may be unavailable, the platform may have changed, or the backend may not support that platform or content type yet. Try a valid public link later if the service is temporarily unavailable.</p>
         </details>
-
         <details class="faq-card rounded-xl p-4">
-          <summary class="font-semibold text-white">
-            Can I download private content?
-          </summary>
-          <p class="text-sm text-gray-400 mt-3">
-            No. Loox is intended for permitted public links.
-          </p>
+          <summary class="font-semibold text-white flex items-center justify-between gap-4">Can I download private content? <i class="faq-arrow fa-solid fa-chevron-down text-gray-400 text-xs"></i></summary>
+          <p class="text-sm text-gray-400 mt-3 leading-relaxed">No. Loox is intended for permitted public links and must not be used to bypass private accounts, login requirements, or access controls.</p>
         </details>
-
         <details class="faq-card rounded-xl p-4">
-          <summary class="font-semibold text-white">
-            Do I need permission to save or share media?
-          </summary>
-          <p class="text-sm text-gray-400 mt-3">
-            You are responsible for having the rights or permission
-            required for your intended use.
-          </p>
+          <summary class="font-semibold text-white flex items-center justify-between gap-4">Do I need permission to save or share media? <i class="faq-arrow fa-solid fa-chevron-down text-gray-400 text-xs"></i></summary>
+          <p class="text-sm text-gray-400 mt-3 leading-relaxed">You are responsible for having the rights or permission required for your intended use. Downloading a public post does not automatically give you permission to repost or commercially use it.</p>
         </details>
-
         <details class="faq-card rounded-xl p-4">
-          <summary class="font-semibold text-white">
-            Is Loox affiliated with these platforms?
-          </summary>
-          <p class="text-sm text-gray-400 mt-3">
-            No. Loox is an independent project.
-          </p>
+          <summary class="font-semibold text-white flex items-center justify-between gap-4">Is Loox connected to Instagram, X, TikTok, or Pinterest? <i class="faq-arrow fa-solid fa-chevron-down text-gray-400 text-xs"></i></summary>
+          <p class="text-sm text-gray-400 mt-3 leading-relaxed">No. Loox is an independent project and is not endorsed by or affiliated with these platforms. Their names and logos belong to their respective owners.</p>
         </details>
-
         <details class="faq-card rounded-xl p-4">
-          <summary class="font-semibold text-white">
-            Does Loox store downloaded files?
-          </summary>
-          <p class="text-sm text-gray-400 mt-3">
-            This depends on the backend implementation.
-          </p>
+          <summary class="font-semibold text-white flex items-center justify-between gap-4">Does Loox store downloaded files? <i class="faq-arrow fa-solid fa-chevron-down text-gray-400 text-xs"></i></summary>
+          <p class="text-sm text-gray-400 mt-3 leading-relaxed">This depends on the backend implementation. Before launch, configure and document how submitted URLs, temporary files, and server logs are handled, and remove temporary media when it is no longer needed.</p>
         </details>
-
       </div>
     </section>
-
   </main>
 
-  <!-- FOOTER -->
-  <footer class="border-t border-gray-800 px-4 py-8 text-center">
-
-    <div class="text-sm font-black text-white mb-3">
-      LOOX DOWNLOADER
+  <footer class="relative z-10 border-t border-gray-800/80 bg-brand-darkBg py-8 text-xs text-gray-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-4 text-center">
+      <a href="#" class="flex items-center gap-2">
+        <span class="w-8 h-8 rounded-lg ig-gradient-bg flex items-center justify-center text-white"><i class="fa-solid fa-download"></i></span>
+        <span class="text-gray-200 font-black tracking-wide text-sm">LOOX DOWNLOADER</span>
+      </a>
+      <div class="flex flex-wrap justify-center gap-x-5 gap-y-2">
+        <a class="hover:text-white transition" href="#how-it-works">How It Works</a>
+        <a class="hover:text-white transition" href="#rules">Usage Rules</a>
+        <a class="hover:text-white transition" href="#privacy">Privacy & Copyright</a>
+        <a class="hover:text-white transition" href="#faq">FAQ</a>
+      </div>
+      <p class="max-w-3xl leading-relaxed">Loox is an independent tool and is not affiliated with Instagram, Meta, X, TikTok, or Pinterest. Respect creators' rights and each platform's terms. Platform names and logos are the property of their respective owners.</p>
+      <p>© <span id="year"></span> Loox Downloader. Use responsibly.</p>
     </div>
-
-    <nav class="flex flex-wrap justify-center gap-4 text-sm text-gray-400 mb-4">
-      <a href="#how-it-works">How It Works</a>
-      <a href="#rules">Usage Rules</a>
-      <a href="#privacy">Privacy &amp; Copyright</a>
-      <a href="#faq">FAQ</a>
-    </nav>
-
-    <p class="text-xs text-gray-500 max-w-3xl mx-auto mb-3">
-      Loox is an independent tool and is not affiliated with Instagram,
-      Meta, X, TikTok, or Pinterest. Respect creators' rights and each
-      platform's terms. Platform names and logos belong to their owners.
-    </p>
-
-    <p class="text-xs text-gray-500">
-      © Loox Downloader. Use responsibly.
-    </p>
-
   </footer>
 
+  <script>
+    const API_URL = 'https://loox-backend.vercel.app/api/download';
+
+    const platformConfig = {
+      instagram: {
+        label: 'Instagram Reels',
+        placeholder: 'Paste Instagram Reel link here...',
+        hosts: ['instagram.com', 'www.instagram.com', 'instagr.am', 'www.instagr.am'],
+        path: /^\/(p|reel|reels|tv)\/[A-Za-z0-9_-]+\/?/i
+      },
+      x: {
+        label: 'X',
+        placeholder: 'Paste an X post link here...',
+        hosts: ['x.com', 'www.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com'],
+        path: /^\/[^/]+\/status\/\d+/i
+      },
+      pinterest: {
+        label: 'Pinterest',
+        placeholder: 'Paste a Pinterest Pin link here...',
+        hosts: ['pinterest.com', 'www.pinterest.com', 'pin.it', 'www.pin.it'],
+        path: /^\/.+/i
+      },
+      tiktok: {
+        label: 'TikTok',
+        placeholder: 'Paste a TikTok video link here...',
+        hosts: ['tiktok.com', 'www.tiktok.com', 'm.tiktok.com', 'vm.tiktok.com', 'vt.tiktok.com'],
+        path: /^\/.+/i
+      }
+    };
+
+    const $ = id => document.getElementById(id);
+    const form = $('downloadForm');
+    const input = $('mediaUrl');
+    const clearBtn = $('clearBtn');
+    const pasteBtn = $('pasteBtn');
+    const fetchBtn = $('fetchBtn');
+    const fetchBtnText = $('fetchBtnText');
+    const fetchBtnIcon = $('fetchBtnIcon');
+    let selectedPlatform = 'instagram';
+
+    $('year').textContent = new Date().getFullYear();
+
+    function setPlatform(platform) {
+      if (!platformConfig[platform]) return;
+      selectedPlatform = platform;
+
+      document.querySelectorAll('[data-platform]').forEach(button => {
+        const active = button.dataset.platform === platform;
+        button.classList.toggle('active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+
+      input.placeholder = platformConfig[platform].placeholder;
+      input.setAttribute('aria-label', platformConfig[platform].label + ' URL');
+      hideMessages();
+    }
+
+    document.querySelectorAll('[data-platform]').forEach(button => {
+      button.addEventListener('click', () => setPlatform(button.dataset.platform));
+    });
+
+    function toggleClearBtn() {
+      clearBtn.classList.toggle('hidden', input.value.trim().length === 0);
+    }
+
+    function showError(message) {
+      $('errorText').textContent = message;
+      $('errorMessage').classList.remove('hidden');
+      $('successMessage').classList.add('hidden');
+      $('successMessage').replaceChildren();
+    }
+
+    function hideMessages() {
+      $('errorMessage').classList.add('hidden');
+      $('successMessage').classList.add('hidden');
+      $('errorText').textContent = '';
+      $('successMessage').replaceChildren();
+    }
+
+    function setLoading(loading) {
+      fetchBtn.disabled = loading;
+      fetchBtn.classList.toggle('opacity-60', loading);
+      fetchBtn.classList.toggle('cursor-not-allowed', loading);
+      fetchBtnText.textContent = loading ? 'Checking...' : 'Get Media';
+      fetchBtnIcon.className = loading
+        ? 'fa-solid fa-spinner fa-spin'
+        : 'fa-solid fa-arrow-right';
+    }
+
+    function isValidPlatformUrl(value, platform) {
+      try {
+        const parsed = new URL(value);
+        const config = platformConfig[platform];
+
+        if (
+          parsed.protocol !== 'https:' ||
+          !config.hosts.includes(parsed.hostname.toLowerCase())
+        ) return false;
+
+        return config.path.test(parsed.pathname);
+      } catch {
+        return false;
+      }
+    }
+
+    function safeHttpsUrl(value) {
+      if (typeof value !== 'string' || !value.trim()) return null;
+
+      try {
+        const url = new URL(value);
+        return url.protocol === 'https:' ? url.href : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function getText(...values) {
+      for (const value of values) {
+        if (typeof value === 'string' && value.trim()) return value.trim();
+      }
+      return '';
+    }
+
+    function getAuthorName(data) {
+      const author = data.author || data.creator || data.user || data.profile || {};
+
+      if (typeof author === 'string') return author.trim();
+
+      return getText(
+        author.name,
+        author.full_name,
+        author.fullName,
+        author.nickname,
+        author.display_name,
+        data.author_name,
+        data.creator_name,
+        data.profile_name
+      );
+    }
+
+    function getUsername(data) {
+      const author = data.author || data.creator || data.user || data.profile || {};
+
+      return getText(
+        data.username,
+        data.author_username,
+        data.unique_id,
+        data.author_unique_id,
+        typeof author === 'object' ? author.username : '',
+        typeof author === 'object' ? author.unique_id : '',
+        typeof author === 'object' ? author.handle : ''
+      );
+    }
+
+    function getThumbnail(data) {
+      const author = data.author || data.creator || data.user || data.profile || {};
+      const media = Array.isArray(data.media) ? data.media : [];
+
+      const candidates = [
+        data.thumbnail,
+        data.thumbnail_url,
+        data.cover,
+        data.cover_url,
+        data.coverUrl,
+        data.image,
+        data.image_url,
+        data.preview,
+        data.preview_url,
+        typeof author === 'object' ? author.avatar : '',
+        typeof author === 'object' ? author.avatar_url : '',
+        ...media.map(item =>
+          item && typeof item === 'object'
+            ? (item.thumbnail || item.thumbnail_url || item.cover || item.image)
+            : ''
+        )
+      ];
+
+      for (const candidate of candidates) {
+        const safe = safeHttpsUrl(candidate);
+        if (safe) return safe;
+      }
+
+      return '';
+    }
+
+    function getMediaUrl(data) {
+      const media = Array.isArray(data.media) ? data.media : [];
+
+      const candidates = [
+        data.downloadUrl,
+        data.download_url,
+        data.url,
+        data.mediaUrl,
+        data.media_url,
+        data.video_hd_url,
+        data.video_url,
+        ...media.map(item =>
+          item && typeof item === 'object'
+            ? (item.download_url || item.downloadUrl || item.url || item.video_url)
+            : ''
+        )
+      ];
+
+      for (const candidate of candidates) {
+        const safe = safeHttpsUrl(candidate);
+        if (safe) return safe;
+      }
+
+      return '';
+    }
+
+    function appendText(parent, tag, className, value) {
+      if (!value) return null;
+
+      const element = document.createElement(tag);
+      element.className = className;
+      element.textContent = value;
+      parent.appendChild(element);
+      return element;
+    }
+
+    function renderMediaCard(data, mediaUrl, platform) {
+      const container = $('successMessage');
+      container.replaceChildren();
+      container.className = 'mt-4 text-left';
+
+      const card = document.createElement('article');
+      card.className = 'media-preview-card p-4 sm:p-5';
+
+      const topRow = document.createElement('div');
+      topRow.className = 'flex items-center justify-between gap-3 mb-4';
+
+      const platformBadge = document.createElement('span');
+      platformBadge.className = 'inline-flex items-center gap-2 rounded-full px-3 py-1.5 bg-purple-500/10 border border-purple-400/20 text-purple-200 text-xs font-bold';
+      platformBadge.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+      platformBadge.appendChild(document.createTextNode(' ' + platformConfig[platform].label));
+      topRow.appendChild(platformBadge);
+
+      const readyBadge = document.createElement('span');
+      readyBadge.className = 'text-xs text-emerald-300 flex items-center gap-1.5';
+      readyBadge.innerHTML = '<i class="fa-solid fa-check"></i> Media ready';
+      topRow.appendChild(readyBadge);
+
+      card.appendChild(topRow);
+
+      const layout = document.createElement('div');
+      layout.className = 'grid grid-cols-1 sm:grid-cols-[minmax(0,220px)_1fr] gap-4 sm:gap-5 items-start';
+
+      const thumbnailUrl = getThumbnail(data);
+      const preview = document.createElement('div');
+
+      if (thumbnailUrl) {
+        const image = document.createElement('img');
+        image.className = 'media-preview-image';
+        image.src = thumbnailUrl;
+        image.alt = 'Preview of the selected media';
+        image.loading = 'lazy';
+        image.referrerPolicy = 'no-referrer';
+
+        image.addEventListener('error', () => {
+          const placeholder = document.createElement('div');
+          placeholder.className = 'media-preview-placeholder flex items-center justify-center text-gray-500';
+          placeholder.innerHTML = '<i class="fa-solid fa-circle-play text-4xl"></i>';
+          image.replaceWith(placeholder);
+        }, { once: true });
+
+        preview.appendChild(image);
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.className = 'media-preview-placeholder flex items-center justify-center text-gray-500';
+        placeholder.innerHTML = '<div class="text-center"><i class="fa-solid fa-circle-play text-4xl mb-2"></i><p class="text-xs">Preview unavailable</p></div>';
+        preview.appendChild(placeholder);
+      }
+
+      layout.appendChild(preview);
+
+      const details = document.createElement('div');
+      details.className = 'min-w-0';
+
+      const title = getText(
+        data.title,
+        data.caption,
+        data.description,
+        data.text,
+        data.video_title,
+        data.videoTitle
+      );
+
+      appendText(
+        details,
+        'h3',
+        'text-lg sm:text-xl font-extrabold text-white leading-snug media-caption',
+        title || 'Your media is ready'
+      );
+
+      const authorName = getAuthorName(data);
+      const username = getUsername(data);
+
+      if (authorName || username) {
+        const authorRow = document.createElement('div');
+        authorRow.className = 'flex flex-wrap items-center gap-2 mt-3 text-sm text-gray-300';
+
+        const avatarValue = data.avatar || data.avatar_url ||
+          data.profile_image || data.author_avatar ||
+          (typeof data.user === 'object' && data.user
+            ? (data.user.avatar || data.user.avatar_url)
+            : '');
+
+        const avatarUrl = safeHttpsUrl(avatarValue);
+
+        if (avatarUrl) {
+          const avatar = document.createElement('img');
+          avatar.src = avatarUrl;
+          avatar.alt = '';
+          avatar.loading = 'lazy';
+          avatar.referrerPolicy = 'no-referrer';
+          avatar.className = 'w-8 h-8 rounded-full object-cover border border-gray-700';
+          avatar.addEventListener('error', () => avatar.remove(), { once: true });
+          authorRow.appendChild(avatar);
+        }
+
+        const authorText = document.createElement('div');
+        authorText.className = 'min-w-0';
+
+        if (authorName) {
+          appendText(authorText, 'p', 'font-semibold text-gray-200 break-words', authorName);
+        }
+
+        if (username) {
+          appendText(
+            authorText,
+            'p',
+            'text-xs text-gray-400 break-words',
+            username.startsWith('@') ? username : '@' + username
+          );
+        }
+
+        authorRow.appendChild(authorText);
+        details.appendChild(authorRow);
+      }
+
+      const duration = data.duration || data.video_duration;
+      if (duration !== undefined && duration !== null && String(duration).trim()) {
+        appendText(details, 'p', 'text-xs text-gray-400 mt-3', 'Duration: ' + String(duration));
+      }
+
+      const button = document.createElement('a');
+      button.href = mediaUrl;
+      button.target = '_blank';
+      button.rel = 'noopener noreferrer';
+      button.className = 'inline-flex mt-5 px-5 py-3 rounded-xl ig-gradient-btn text-white font-bold text-sm items-center justify-center gap-2';
+      button.innerHTML = '<i class="fa-solid fa-download"></i> Open / Save Media';
+      details.appendChild(button);
+
+      const note = document.createElement('p');
+      note.className = 'text-xs text-gray-500 mt-3 leading-relaxed';
+      note.textContent = 'The media opens from the link provided by the service. Saving behavior depends on your browser and device.';
+      details.appendChild(note);
+
+      layout.appendChild(details);
+      card.appendChild(layout);
+
+      if (!thumbnailUrl || (!title && !authorName && !username)) {
+        const noteBox = document.createElement('p');
+        noteBox.className = 'text-xs text-gray-500 border-t border-gray-800 mt-4 pt-3';
+        noteBox.textContent = 'Some details were not supplied by the media service. The preview will show more information when those fields are available.';
+        card.appendChild(noteBox);
+      }
+
+      container.appendChild(card);
+      container.classList.remove('hidden');
+      $('errorMessage').classList.add('hidden');
+    }
+
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      toggleClearBtn();
+      hideMessages();
+      input.focus();
+    });
+
+    input.addEventListener('input', toggleClearBtn);
+
+    pasteBtn.addEventListener('click', async () => {
+      hideMessages();
+
+      try {
+        if (!navigator.clipboard || !navigator.clipboard.readText) {
+          throw new Error('Clipboard access is unavailable here. Tap the box and paste your link manually.');
+        }
+
+        const text = await navigator.clipboard.readText();
+
+        if (!text) {
+          showError('Your clipboard is empty. Copy a link first.');
+          return;
+        }
+
+        input.value = text.trim();
+        toggleClearBtn();
+        input.focus();
+      } catch (error) {
+        showError(error.message || 'Clipboard access failed. Please paste your link manually.');
+      }
+    });
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      hideMessages();
+
+      const url = input.value.trim();
+      const config = platformConfig[selectedPlatform];
+
+      if (!isValidPlatformUrl(url, selectedPlatform)) {
+        showError('That does not look like a valid ' + config.label + ' link. Please check the URL or select the correct platform.');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, platform: selectedPlatform })
+        });
+
+        let data = {};
+        try {
+          data = await response.json();
+        } catch (_) {}
+
+        if (!response.ok) {
+          if ([501, 404, 405].includes(response.status)) {
+            throw new Error(
+              'The backend may not have an active integration for ' +
+              config.label + ' yet. Check the backend deployment and platform API.'
+            );
+          }
+
+          throw new Error(
+            data.error ||
+            data.message ||
+            ('The service returned an error (' + response.status + '). Please try again later.')
+          );
+        }
+
+        const mediaUrl = getMediaUrl(data);
+
+        if (!mediaUrl) {
+          throw new Error(
+            data.message ||
+            'The service responded, but did not return a valid HTTPS media link. Try another public post.'
+          );
+        }
+
+        renderMediaCard(data, mediaUrl, selectedPlatform);
+      } catch (error) {
+        showError(error.message || 'Could not contact the download service. Check your connection and try again.');
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    // Keep compatibility if a theme button is added to the page later.
+    $('themeBtn')?.addEventListener('click', () => {
+      const isDark = document.body.dataset.theme !== 'light';
+
+      if (isDark) {
+        document.body.dataset.theme = 'light';
+        document.body.style.background = '#f5f7fb';
+        document.body.style.color = '#111827';
+
+        document.querySelectorAll('.glass-card, .faq-card').forEach(el => {
+          el.style.background = 'rgba(255,255,255,.92)';
+          el.style.borderColor = '#dbe2ee';
+        });
+
+        document.querySelectorAll('h1,h2,h3,h4,nav a, .font-bold, .font-extrabold, .font-black').forEach(el => {
+          if (!el.classList.contains('ig-gradient-text')) el.style.color = '#111827';
+        });
+
+        $('themeBtn').innerHTML = '<i class="fa-solid fa-sun"></i>';
+        $('themeBtn').setAttribute('aria-label', 'Switch to dark theme');
+      } else {
+        document.body.dataset.theme = 'dark';
+        document.body.style.background = '#0b0f19';
+        document.body.style.color = '#f3f4f6';
+
+        document.querySelectorAll('.glass-card, .faq-card').forEach(el => {
+          el.style.background = '';
+          el.style.borderColor = '';
+        });
+
+        document.querySelectorAll('h1,h2,h3,h4,nav a, .font-bold, .font-extrabold, .font-black').forEach(el => {
+          el.style.color = '';
+        });
+
+        $('themeBtn').innerHTML = '<i class="fa-solid fa-moon"></i>';
+        $('themeBtn').setAttribute('aria-label', 'Switch to light theme');
+      }
+    });
+  </script>
+
+  <!-- Admin settings integration: preserved -->
+  <script>
+  (async function loadLooxAdminSettings() {
+    const SETTINGS_URL = 'https://loox-backend.vercel.app/api/admin/settings';
+    const $ = selector => document.querySelector(selector);
+
+    function addBanner(id, message, className) {
+      let banner = document.getElementById(id);
+
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = id;
+        banner.className = className;
+        banner.setAttribute('role', 'status');
+
+        const main = $('main');
+        if (main) main.prepend(banner);
+      }
+
+      banner.textContent = message;
+      return banner;
+    }
+
+    function updateText(element, value) {
+      if (element && typeof value === 'string') element.textContent = value;
+    }
+
+    function renderRules(value) {
+      const list = $('#rules ul');
+      if (!list || typeof value !== 'string' || !value.trim()) return;
+
+      list.replaceChildren();
+
+      value.split('\n').map(line => line.trim()).filter(Boolean).forEach(line => {
+        const item = document.createElement('li');
+        item.className = 'flex gap-3';
+
+        const icon = document.createElement('i');
+        icon.className = 'fa-solid fa-check rule-check mt-1';
+
+        const text = document.createElement('span');
+        text.textContent = line.replace(/^[-•]\s*/, '');
+
+        item.append(icon, text);
+        list.appendChild(item);
+      });
+    }
+
+    function renderFaq(items) {
+      const container = $('#faq .space-y-3');
+      if (!container || !Array.isArray(items)) return;
+
+      const validItems = items.filter(item =>
+        item &&
+        typeof (item.question || item.q) === 'string' &&
+        typeof (item.answer || item.a) === 'string'
+      );
+
+      if (!validItems.length) return;
+      container.replaceChildren();
+
+      validItems.forEach(item => {
+        const details = document.createElement('details');
+        details.className = 'faq-card rounded-xl p-4';
+
+        const summary = document.createElement('summary');
+        summary.className = 'font-semibold text-white flex items-center justify-between gap-4';
+
+        const question = document.createElement('span');
+        question.textContent = item.question || item.q;
+
+        const arrow = document.createElement('i');
+        arrow.className = 'faq-arrow fa-solid fa-chevron-down text-gray-400 text-xs';
+
+        summary.append(question, arrow);
+
+        const answer = document.createElement('p');
+        answer.className = 'text-sm text-gray-400 mt-3 leading-relaxed';
+        answer.textContent = item.answer || item.a;
+
+        details.append(summary, answer);
+        container.appendChild(details);
+      });
+    }
+
+    function renderPolicy(id, heading, value) {
+      if (typeof value !== 'string' || !value.trim()) return;
+
+      let section = document.getElementById(id);
+
+      if (!section) {
+        section = document.createElement('section');
+        section.id = id;
+        section.className = 'px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto pb-14';
+
+        const card = document.createElement('div');
+        card.className = 'glass-card rounded-2xl p-6 sm:p-8';
+
+        const title = document.createElement('h2');
+        title.className = 'text-2xl font-extrabold mb-4';
+        title.textContent = heading;
+
+        const paragraph = document.createElement('p');
+        paragraph.className = 'text-sm text-gray-300 leading-relaxed';
+        paragraph.style.whiteSpace = 'pre-wrap';
+        paragraph.dataset.adminPolicy = 'true';
+        paragraph.textContent = value;
+
+        card.append(title, paragraph);
+        section.appendChild(card);
+
+        const main = $('main');
+        if (main) main.appendChild(section);
+        return;
+      }
+
+      const paragraph = section.querySelector('[data-admin-policy]');
+      if (paragraph) paragraph.textContent = value;
+    }
+
+    try {
+      const response = await fetch(SETTINGS_URL, {
+        method: 'GET',
+        cache: 'no-store'
+      });
+
+      if (!response.ok) throw new Error('Settings request failed: ' + response.status);
+
+      const result = await response.json();
+      const settings = result.settings || result;
+
+      if (typeof settings.siteName === 'string' && settings.siteName.trim()) {
+        const siteName = settings.siteName.trim();
+        document.title = siteName + ' Downloader';
+        updateText($('header a[aria-label] .text-2xl'), siteName);
+        updateText($('footer .text-sm.font-black'), siteName + ' DOWNLOADER');
+      }
+
+      if (typeof settings.announcement === 'string' && settings.announcement.trim()) {
+        addBanner(
+          'adminAnnouncement',
+          settings.announcement.trim(),
+          'relative z-20 mx-4 mt-4 rounded-xl border border-pink-500/30 bg-pink-500/10 px-4 py-3 text-center text-sm text-pink-200'
+        );
+      } else {
+        document.getElementById('adminAnnouncement')?.remove();
+      }
+
+      if (typeof settings.heroTitle === 'string' && settings.heroTitle.trim()) {
+        const heroHeading = $('#downloader h1');
+        if (heroHeading) heroHeading.textContent = settings.heroTitle;
+      }
+
+      if (typeof settings.heroDescription === 'string' && settings.heroDescription.trim()) {
+        updateText($('#downloader h1 + p'), settings.heroDescription);
+      }
+
+      if (typeof settings.accentColor === 'string' && /^#[0-9a-f]{6}$/i.test(settings.accentColor)) {
+        document.documentElement.style.setProperty('--loox-accent', settings.accentColor);
+        document.querySelectorAll('.ig-gradient-btn').forEach(button => {
+          button.style.background = settings.accentColor;
+        });
+      }
+
+      if (Array.isArray(settings.supportedPlatforms)) {
+        const normalize = value => String(value).toLowerCase().replace(/[^a-z]/g, '');
+        const enabled = new Set(settings.supportedPlatforms.map(normalize));
+
+        const aliases = {
+          instagram: ['instagram', 'instagramreels'],
+          x: ['x', 'twitter'],
+          pinterest: ['pinterest'],
+          tiktok: ['tiktok']
+        };
+
+        document.querySelectorAll('[data-platform]').forEach(button => {
+          const platform = button.dataset.platform;
+          const isEnabled = (aliases[platform] || [platform]).some(alias => enabled.has(alias));
+          button.hidden = !isEnabled;
+        });
+
+        const currentButton = document.querySelector('[data-platform].active');
+
+        if (!currentButton || currentButton.hidden) {
+          const firstEnabled = document.querySelector('[data-platform]:not([hidden])');
+          if (firstEnabled) firstEnabled.click();
+        }
+
+        if (!document.querySelector('[data-platform]:not([hidden])')) {
+          addBanner(
+            'noPlatformsNotice',
+            'No download platforms are currently enabled.',
+            'relative z-20 mx-4 mt-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-center text-sm text-yellow-200'
+          );
+        }
+      }
+
+      renderRules(settings.rules);
+      renderFaq(settings.faq);
+      renderPolicy('adminPrivacyPolicy', 'Privacy Policy', settings.privacyPolicy);
+      renderPolicy('adminCopyrightPolicy', 'Copyright Policy', settings.copyrightPolicy);
+
+      if (settings.maintenanceMode === true) {
+        addBanner(
+          'maintenanceNotice',
+          'Loox is temporarily under maintenance. Please try again later.',
+          'relative z-30 mx-4 mt-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-center text-sm text-yellow-200'
+        );
+
+        const form = $('#downloadForm');
+        if (form) {
+          form.querySelectorAll('input, button').forEach(control => {
+            control.disabled = true;
+          });
+        }
+
+        document.querySelectorAll('[data-platform]').forEach(button => {
+          button.disabled = true;
+        });
+      }
+    } catch (error) {
+      console.error('Could not load Loox admin settings:', error);
+    }
+  })();
+  </script>
 </body>
 </html>
