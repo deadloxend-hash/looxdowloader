@@ -151,7 +151,7 @@
                 <a href="#faq" class="hover:text-pink-400 transition-colors">FAQ</a>
             </nav>
             <a href="#platforms" class="px-3 py-2 text-xs sm:text-sm font-semibold rounded-lg border border-gray-700 bg-gray-800/80 hover:bg-gray-700 text-gray-200 transition-all flex items-center gap-2">
-                <i class="fa-solid fa-layer-group"></i><span>Platforms</span>
+                <i class="fa-solid fa-layer-group"><span>Platforms</span></i>
             </a>
         </div>
     </header>
@@ -191,17 +191,18 @@
             <div class="glass-card p-3 sm:p-4 rounded-2xl shadow-2xl border border-gray-700/60 max-w-3xl mx-auto">
                 <form id="downloadForm" class="space-y-3">
                     <div class="relative flex flex-col sm:flex-row items-center gap-2">
+                        <!-- Fixed padding-right (pr-28) so text never hides behind buttons -->
                         <div class="relative w-full">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                                 <i class="fa-solid fa-link text-lg"></i>
                             </div>
-                            <input type="url" id="mediaUrl" placeholder="Paste Instagram Reel link here..." class="w-full pl-11 pr-24 py-4 bg-gray-900/90 text-white placeholder-gray-500 rounded-xl border border-gray-700 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm sm:text-base" autocomplete="url" autocapitalize="off" spellcheck="false" aria-label="Media URL" required>
+                            <input type="url" id="mediaUrl" placeholder="Paste Instagram Reel link here..." class="w-full pl-11 pr-28 py-4 bg-gray-900/90 text-white placeholder-gray-500 rounded-xl border border-gray-700 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm sm:text-base" autocomplete="url" autocapitalize="off" spellcheck="false" aria-label="Media URL" required>
                             <div class="absolute inset-y-0 right-0 pr-2 flex items-center gap-1">
                                 <button type="button" id="clearBtn" class="hidden p-2 text-gray-400 hover:text-white transition-colors" title="Clear text" aria-label="Clear URL"><i class="fa-solid fa-xmark"></i></button>
                                 <button type="button" id="pasteBtn" class="px-2.5 py-1.5 text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg border border-gray-600 transition-all flex items-center gap-1.5" title="Paste from clipboard"><i class="fa-regular fa-clipboard"></i><span class="hidden sm:inline">Paste</span></button>
                             </div>
                         </div>
-                        <button type="submit" id="fetchBtn" class="w-full sm:w-auto px-8 py-4 ig-gradient-btn text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 shrink-0 text-base">
+                        <button type="submit" id="fetchBtn" class="w-full sm:w-auto px-8 py-4 ig-gradient-btn text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 shrink-0 text-base opacity-0 transition-opacity duration-300">
                             <span id="fetchBtnText">Get Media</span><i id="fetchBtnIcon" class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
@@ -653,7 +654,11 @@
 
             try {
                 const response = await fetch(SETTINGS_URL, { method: 'GET', cache: 'no-store' });
-                if (!response.ok) return;
+                if (!response.ok) {
+                    // Reveal button smoothly even if settings request fails
+                    $('#fetchBtn')?.classList.remove('opacity-0');
+                    return;
+                }
                 const result = await response.json();
                 const settings = result.settings || result;
 
@@ -672,6 +677,9 @@
                 }
             } catch (error) {
                 console.error('Could not load admin settings:', error);
+            } finally {
+                // Fade in the button smoothly after settings are processed to prevent any flash
+                $('#fetchBtn')?.classList.remove('opacity-0');
             }
         })();
     </script>
