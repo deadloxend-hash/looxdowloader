@@ -50,16 +50,17 @@
       margin-bottom: 18px;
     }
 
-    h2 { margin-top: 0; font-size: 20px; }
+    h2 { margin-top: 0; font-size: 20px; color: #fff; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
 
     label {
       display: block;
       margin: 16px 0 7px;
       color: #d4d4d8;
       font-size: 14px;
+      font-weight: bold;
     }
 
-    input, textarea {
+    input, textarea, select {
       width: 100%;
       padding: 12px;
       color: var(--text);
@@ -81,7 +82,7 @@
     }
 
     textarea {
-      min-height: 100px;
+      min-height: 90px;
       resize: vertical;
     }
 
@@ -96,6 +97,7 @@
       margin: 0;
       display: flex;
       align-items: center;
+      font-weight: normal;
     }
 
     button {
@@ -106,6 +108,7 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
+      transition: filter 0.2s;
     }
 
     button:hover { filter: brightness(1.12); }
@@ -132,13 +135,15 @@
       color: var(--muted);
       font-size: 13px;
       line-height: 1.5;
+      margin-bottom: 12px;
     }
 
-    .faq-item {
+    .repeatable-item {
       padding: 14px;
       border: 1px solid var(--border);
       border-radius: 10px;
       margin: 12px 0;
+      background: #0e0e14;
     }
 
     @media (max-width: 600px) {
@@ -151,35 +156,21 @@
 
 <body>
   <header>
-    <h1><span>LOOX</span> Admin</h1>
-    <button id="logoutBtn" class="secondary hidden" type="button">
-      Log out
-    </button>
+    <h1><span>LOOX</span> Admin Control Center</h1>
+    <button id="logoutBtn" class="secondary hidden" type="button">Log out</button>
   </header>
 
   <main>
     <section id="loginPanel" class="panel">
       <h2>Administrator Login</h2>
-      <p class="hint">
-        Sign in using the admin credentials configured on your backend.
-      </p>
+      <p class="hint">Sign in using your administrative credentials configured on your Vercel backend.</p>
 
       <form id="loginForm">
         <label for="email">Admin email</label>
-        <input
-          id="email"
-          type="email"
-          autocomplete="username"
-          required
-        >
+        <input id="email" type="email" autocomplete="username" required>
 
         <label for="password">Admin password</label>
-        <input
-          id="password"
-          type="password"
-          autocomplete="current-password"
-          required
-        >
+        <input id="password" type="password" autocomplete="current-password" required>
 
         <div class="actions" style="margin-top:18px">
           <button id="loginBtn" type="submit">Log in</button>
@@ -188,77 +179,84 @@
     </section>
 
     <section id="dashboard" class="hidden">
+      <!-- Main Branding & Theme -->
       <div class="panel">
-        <h2>Website Settings</h2>
+        <h2>Branding & Theme Settings</h2>
 
-        <label for="siteName">Site name</label>
+        <label for="siteName">Website Title & Branding</label>
         <input id="siteName" maxlength="80">
 
-        <label for="accentColor">Accent color</label>
+        <label for="accentColor">Primary Accent Color</label>
         <input id="accentColor" type="color" value="#8b5cf6">
 
-        <label for="announcement">Announcement banner</label>
-        <textarea id="announcement" maxlength="500"></textarea>
+        <label for="heroBadge">Hero Tag Badge Text</label>
+        <input id="heroBadge" placeholder="e.g. SIMPLE · ULTRA FAST · ALL DEVICES READY">
 
-        <label for="heroTitle">Homepage heading</label>
+        <label for="announcement">Top Announcement Banner (Optional)</label>
+        <textarea id="announcement" maxlength="500" placeholder="Leave empty to hide announcement banner..."></textarea>
+
+        <label for="heroTitle">Hero Section Main Heading</label>
         <input id="heroTitle" maxlength="160">
 
-        <label for="heroDescription">Homepage description</label>
+        <label for="heroDescription">Hero Section Subtitle / Description</label>
         <textarea id="heroDescription" maxlength="1000"></textarea>
 
         <label>
           <input id="maintenanceMode" type="checkbox">
-          Enable maintenance mode
+          Enable Maintenance Mode
         </label>
-
-        <p class="hint">
-          This saves the maintenance setting. Your public homepage must
-          also be updated to enforce maintenance mode.
-        </p>
       </div>
 
+      <!-- Supported Platforms -->
       <div class="panel">
-        <h2>Supported Platforms</h2>
-        <p class="hint">
-          These are display settings. The current backend downloader
-          handles Instagram only.
-        </p>
+        <h2>Active Platforms</h2>
+        <p class="hint">Select which platforms should appear as selectable tabs on the frontend.</p>
 
         <div class="platforms">
-          <label><input type="checkbox" name="platform" value="Instagram"> Instagram</label>
-          <label><input type="checkbox" name="platform" value="X"> X</label>
+          <label><input type="checkbox" name="platform" value="Instagram"> Instagram Reels</label>
+          <label><input type="checkbox" name="platform" value="X"> X (Twitter)</label>
           <label><input type="checkbox" name="platform" value="TikTok"> TikTok</label>
           <label><input type="checkbox" name="platform" value="Pinterest"> Pinterest</label>
         </div>
       </div>
 
+      <!-- Feature Cards Section -->
       <div class="panel">
-        <h2>FAQ</h2>
-        <div id="faqList"></div>
-        <button type="button" class="secondary" id="addFaqBtn">
-          Add FAQ
-        </button>
+        <h2>"Why Choose Us" Feature Cards</h2>
+        <p class="hint">Add key selling points shown in the features grid.</p>
+        <div id="featureList"></div>
+        <button type="button" class="secondary" id="addFeatureBtn">Add Feature Card</button>
       </div>
 
+      <!-- FAQ Section -->
       <div class="panel">
-        <h2>Policies</h2>
+        <h2>Frequently Asked Questions (FAQ)</h2>
+        <div id="faqList"></div>
+        <button type="button" class="secondary" id="addFaqBtn">Add FAQ Item</button>
+      </div>
 
-        <label for="rules">Rules</label>
+      <!-- Policies & Legal -->
+      <div class="panel">
+        <h2>Legal, Compliance & Safety Policies</h2>
+
+        <label for="dmcaNotice">DMCA & Copyright Notice Box</label>
+        <textarea id="dmcaNotice" maxlength="5000"></textarea>
+
+        <label for="rules">Usage Rules</label>
         <textarea id="rules" maxlength="10000"></textarea>
 
-        <label for="privacyPolicy">Privacy policy</label>
+        <label for="privacyPolicy">Privacy Policy</label>
         <textarea id="privacyPolicy" maxlength="15000"></textarea>
 
-        <label for="copyrightPolicy">Copyright policy</label>
+        <label for="copyrightPolicy">Full Copyright Policy</label>
         <textarea id="copyrightPolicy" maxlength="10000"></textarea>
       </div>
 
+      <!-- Save Actions -->
       <div class="panel">
         <div class="actions">
-          <button id="saveBtn" type="button">Save settings</button>
-          <button id="reloadBtn" class="secondary" type="button">
-            Reload settings
-          </button>
+          <button id="saveBtn" type="button">Save All Changes</button>
+          <button id="reloadBtn" class="secondary" type="button">Reload Settings</button>
         </div>
       </div>
     </section>
@@ -268,10 +266,8 @@
 
   <script>
     const API = 'https://loox-backend.vercel.app/api/admin';
-
     const $ = id => document.getElementById(id);
 
-    // Kept in memory rather than persistent browser storage.
     let adminToken = null;
     let currentSettings = null;
 
@@ -281,9 +277,7 @@
 
     async function apiRequest(path, options = {}) {
       const headers = {
-        ...(options.body
-          ? { 'Content-Type': 'application/json' }
-          : {}),
+        ...(options.body ? { 'Content-Type': 'application/json' } : {}),
         ...(options.headers || {})
       };
 
@@ -305,10 +299,7 @@
           adminToken = null;
           showLogin();
         }
-
-        throw new Error(
-          data.error || `Request failed (${response.status})`
-        );
+        throw new Error(data.error || `Request failed (${response.status})`);
       }
 
       return data;
@@ -326,6 +317,7 @@
       $('logoutBtn').classList.add('hidden');
     }
 
+    // Dynamic FAQ Handler
     function renderFaq(items = []) {
       $('faqList').replaceChildren();
       items.forEach(item => addFaq(item.question, item.answer));
@@ -333,91 +325,86 @@
 
     function addFaq(question = '', answer = '') {
       const wrapper = document.createElement('div');
-      wrapper.className = 'faq-item';
+      wrapper.className = 'repeatable-item';
 
-      const qLabel = document.createElement('label');
-      qLabel.textContent = 'Question';
+      wrapper.innerHTML = `
+        <label>Question</label>
+        <input class="faq-question" maxlength="300" value="${escapeHtml(question)}">
+        <label>Answer</label>
+        <textarea class="faq-answer" maxlength="2000">${escapeHtml(answer)}</textarea>
+        <button type="button" class="danger" style="margin-top:10px;">Remove FAQ</button>
+      `;
 
-      const qInput = document.createElement('input');
-      qInput.className = 'faq-question';
-      qInput.maxLength = 300;
-      qInput.value = question;
-
-      const aLabel = document.createElement('label');
-      aLabel.textContent = 'Answer';
-
-      const aInput = document.createElement('textarea');
-      aInput.className = 'faq-answer';
-      aInput.maxLength = 2000;
-      aInput.value = answer;
-
-      const removeBtn = document.createElement('button');
-      removeBtn.type = 'button';
-      removeBtn.className = 'danger';
-      removeBtn.textContent = 'Remove FAQ';
-      removeBtn.style.marginTop = '10px';
-      removeBtn.addEventListener('click', () => wrapper.remove());
-
-      wrapper.append(qLabel, qInput, aLabel, aInput, removeBtn);
+      wrapper.querySelector('.danger').addEventListener('click', () => wrapper.remove());
       $('faqList').appendChild(wrapper);
+    }
+
+    // Dynamic Feature Cards Handler
+    function renderFeatures(items = []) {
+      $('featureList').replaceChildren();
+      items.forEach(item => addFeature(item.title, item.description, item.icon));
+    }
+
+    function addFeature(title = '', description = '', icon = 'fa-star') {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'repeatable-item';
+
+      wrapper.innerHTML = `
+        <label>Feature Title</label>
+        <input class="feature-title" maxlength="100" value="${escapeHtml(title)}">
+        <label>FontAwesome Icon Class (e.g. fa-bolt, fa-shield-halved, fa-gem)</label>
+        <input class="feature-icon" maxlength="50" value="${escapeHtml(icon)}">
+        <label>Description</label>
+        <textarea class="feature-desc" maxlength="500">${escapeHtml(description)}</textarea>
+        <button type="button" class="danger" style="margin-top:10px;">Remove Feature</button>
+      `;
+
+      wrapper.querySelector('.danger').addEventListener('click', () => wrapper.remove());
+      $('featureList').appendChild(wrapper);
+    }
+
+    function escapeHtml(str) {
+      return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
     function fillForm(s) {
       $('siteName').value = s.siteName || 'LOOX';
-
-      $('accentColor').value =
-        /^#[0-9a-fA-F]{6}$/.test(s.accentColor)
-          ? s.accentColor
-          : '#8b5cf6';
-
+      $('accentColor').value = /^#[0-9a-fA-F]{6}$/.test(s.accentColor) ? s.accentColor : '#8b5cf6';
+      $('heroBadge').value = s.heroBadge || 'SIMPLE · ULTRA FAST · ALL DEVICES READY';
       $('announcement').value = s.announcement || '';
       $('heroTitle').value = s.heroTitle || '';
       $('heroDescription').value = s.heroDescription || '';
       $('maintenanceMode').checked = s.maintenanceMode === true;
+      $('dmcaNotice').value = s.dmcaNotice || '';
       $('rules').value = s.rules || '';
       $('privacyPolicy').value = s.privacyPolicy || '';
       $('copyrightPolicy').value = s.copyrightPolicy || '';
 
       document.querySelectorAll('input[name="platform"]').forEach(input => {
-        input.checked =
-          (s.supportedPlatforms || []).includes(input.value);
+        input.checked = (s.supportedPlatforms || []).includes(input.value);
       });
 
       renderFaq(s.faq || []);
+      renderFeatures(s.features || []);
 
-      document.documentElement.style.setProperty(
-        '--accent',
-        $('accentColor').value
-      );
+      document.documentElement.style.setProperty('--accent', $('accentColor').value);
     }
 
     $('accentColor').addEventListener('input', event => {
-      document.documentElement.style.setProperty(
-        '--accent',
-        event.target.value
-      );
+      document.documentElement.style.setProperty('--accent', event.target.value);
     });
 
     async function loadSettings() {
       showStatus('Loading settings…');
-
       const data = await apiRequest('/manage');
-
-      currentSettings = data.settings;
+      currentSettings = data.settings || {};
       fillForm(currentSettings);
       showDashboard();
-
-      showStatus(
-        'Settings loaded. Last updated: ' +
-        (data.updatedAt
-          ? new Date(data.updatedAt).toLocaleString()
-          : 'unknown')
-      );
+      showStatus('Settings loaded. Last updated: ' + (data.updatedAt ? new Date(data.updatedAt).toLocaleString() : 'Just now'));
     }
 
     $('loginForm').addEventListener('submit', async event => {
       event.preventDefault();
-
       const loginBtn = $('loginBtn');
       loginBtn.disabled = true;
       showStatus('Signing in…');
@@ -431,13 +418,9 @@
           })
         });
 
-        if (!data.token) {
-          throw new Error('The server did not return a login token.');
-        }
-
+        if (!data.token) throw new Error('No login token received.');
         adminToken = data.token;
         $('password').value = '';
-
         await loadSettings();
       } catch (error) {
         adminToken = null;
@@ -449,37 +432,35 @@
     });
 
     $('addFaqBtn').addEventListener('click', () => addFaq());
+    $('addFeatureBtn').addEventListener('click', () => addFeature());
 
     $('reloadBtn').addEventListener('click', async () => {
-      try {
-        await loadSettings();
-      } catch (error) {
-        showStatus(error.message);
-      }
+      try { await loadSettings(); } catch (error) { showStatus(error.message); }
     });
 
     $('saveBtn').addEventListener('click', async () => {
       const settings = {
         siteName: $('siteName').value,
         accentColor: $('accentColor').value,
+        heroBadge: $('heroBadge').value,
         announcement: $('announcement').value,
         heroTitle: $('heroTitle').value,
         heroDescription: $('heroDescription').value,
         maintenanceMode: $('maintenanceMode').checked,
-
-        supportedPlatforms: Array.from(
-          document.querySelectorAll(
-            'input[name="platform"]:checked'
-          )
-        ).map(input => input.value),
-
-        faq: Array.from(
-          document.querySelectorAll('.faq-item')
-        ).map(item => ({
+        supportedPlatforms: Array.from(document.querySelectorAll('input[name="platform"]:checked')).map(input => input.value),
+        
+        faq: Array.from(document.querySelectorAll('#faqList .repeatable-item')).map(item => ({
           question: item.querySelector('.faq-question').value,
           answer: item.querySelector('.faq-answer').value
         })),
 
+        features: Array.from(document.querySelectorAll('#featureList .repeatable-item')).map(item => ({
+          title: item.querySelector('.feature-title').value,
+          icon: item.querySelector('.feature-icon').value,
+          description: item.querySelector('.feature-desc').value
+        })),
+
+        dmcaNotice: $('dmcaNotice').value,
         rules: $('rules').value,
         privacyPolicy: $('privacyPolicy').value,
         copyrightPolicy: $('copyrightPolicy').value
@@ -487,7 +468,7 @@
 
       const saveBtn = $('saveBtn');
       saveBtn.disabled = true;
-      showStatus('Saving settings…');
+      showStatus('Saving settings to server…');
 
       try {
         const data = await apiRequest('/manage', {
@@ -497,7 +478,7 @@
 
         currentSettings = data.settings;
         fillForm(currentSettings);
-        showStatus('Settings saved successfully to the database.');
+        showStatus('Settings successfully saved and live on your website!');
       } catch (error) {
         showStatus('Save failed: ' + error.message);
       } finally {
@@ -513,7 +494,6 @@
       showStatus('Logged out.');
     });
 
-    // No saved token: require a fresh login when the page opens.
     showLogin();
     showStatus('Please log in to manage your website.');
   </script>
