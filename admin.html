@@ -4,7 +4,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
   <title>LOOX Admin Dashboard</title>
+
   <style>
     :root {
       --accent: #8b5cf6;
@@ -58,7 +60,7 @@
       font-size: 14px;
     }
 
-    input, textarea, select {
+    input, textarea {
       width: 100%;
       padding: 12px;
       color: var(--text);
@@ -108,12 +110,30 @@
     }
 
     button:hover { filter: brightness(1.12); }
+    button:disabled { opacity: .6; cursor: wait; }
     button.secondary { background: #333340; }
     button.danger { background: #b91c1c; }
-    .actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
     .hidden { display: none !important; }
-    #status { color: var(--muted); margin-top: 14px; overflow-wrap: anywhere; }
-    .hint { color: var(--muted); font-size: 13px; line-height: 1.5; }
+
+    #status {
+      color: var(--muted);
+      margin-top: 14px;
+      overflow-wrap: anywhere;
+      line-height: 1.5;
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
 
     .faq-item {
       padding: 14px;
@@ -129,27 +149,41 @@
     }
   </style>
 </head>
+
 <body>
   <header>
     <h1><span>LOOX</span> Admin</h1>
-    <button id="logoutBtn" class="secondary hidden">Log out</button>
+    <button id="logoutBtn" class="secondary hidden" type="button">
+      Log out
+    </button>
   </header>
 
   <main>
     <section id="loginPanel" class="panel">
       <h2>Administrator Login</h2>
-      <p class="hint">Sign in with the admin credentials configured on your backend.</p>
+      <p class="hint">
+        Sign in using the admin credentials configured on your backend.
+      </p>
 
       <form id="loginForm">
         <label for="email">Admin email</label>
-        <input id="email" type="email" autocomplete="username" required>
+        <input
+          id="email"
+          type="email"
+          autocomplete="username"
+          required
+        >
 
         <label for="password">Admin password</label>
-        <input id="password" type="password"
-          autocomplete="current-password" required>
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          required
+        >
 
         <div class="actions" style="margin-top:18px">
-          <button type="submit">Log in</button>
+          <button id="loginBtn" type="submit">Log in</button>
         </div>
       </form>
     </section>
@@ -177,12 +211,20 @@
           <input id="maintenanceMode" type="checkbox">
           Enable maintenance mode
         </label>
-        <p class="hint">This saves the maintenance setting. The public homepage must also be updated to enforce it.</p>
+
+        <p class="hint">
+          This saves the maintenance setting. Your public homepage must
+          also be updated to enforce maintenance mode.
+        </p>
       </div>
 
       <div class="panel">
         <h2>Supported Platforms</h2>
-        <p class="hint">Select the platforms to display as supported. The backend downloader currently handles Instagram only.</p>
+        <p class="hint">
+          These are display settings. The current backend downloader
+          handles Instagram only.
+        </p>
+
         <div class="platforms">
           <label><input type="checkbox" name="platform" value="Instagram"> Instagram</label>
           <label><input type="checkbox" name="platform" value="X"> X</label>
@@ -194,7 +236,9 @@
       <div class="panel">
         <h2>FAQ</h2>
         <div id="faqList"></div>
-        <button type="button" class="secondary" id="addFaqBtn">Add FAQ</button>
+        <button type="button" class="secondary" id="addFaqBtn">
+          Add FAQ
+        </button>
       </div>
 
       <div class="panel">
@@ -213,7 +257,9 @@
       <div class="panel">
         <div class="actions">
           <button id="saveBtn" type="button">Save settings</button>
-          <button id="reloadBtn" class="secondary" type="button">Reload settings</button>
+          <button id="reloadBtn" class="secondary" type="button">
+            Reload settings
+          </button>
         </div>
       </div>
     </section>
@@ -225,6 +271,9 @@
     const API = 'https://loox-backend.vercel.app/api/admin';
 
     const $ = id => document.getElementById(id);
+
+    // Kept in memory rather than persistent browser storage.
+    let adminToken = null;
     let currentSettings = null;
 
     function showStatus(message) {
@@ -232,19 +281,35 @@
     }
 
     async function apiRequest(path, options = {}) {
+      const headers = {
+        ...(options.body
+          ? { 'Content-Type': 'application/json' }
+          : {}),
+        ...(options.headers || {})
+      };
+
+      if (adminToken) {
+        headers.Authorization = `Bearer ${adminToken}`;
+      }
+
       const response = await fetch(API + path, {
         ...options,
-        credentials: 'include',
-        headers: {
-          ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-          ...options.headers
-        }
+        credentials: 'omit',
+        headers,
+        cache: 'no-store'
       });
 
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(data.error || `Request failed (${response.status})`);
+        if (response.status === 401 && path !== '/login') {
+          adminToken = null;
+          showLogin();
+        }
+
+        throw new Error(
+          data.error || `Request failed (${response.status})`
+        );
       }
 
       return data;
@@ -264,7 +329,6 @@
 
     function renderFaq(items = []) {
       $('faqList').replaceChildren();
-
       items.forEach(item => addFaq(item.question, item.answer));
     }
 
@@ -301,8 +365,12 @@
 
     function fillForm(s) {
       $('siteName').value = s.siteName || 'LOOX';
-      $('accentColor').value = /^#[0-9a-fA-F]{6}$/.test(s.accentColor)
-        ? s.accentColor : '#8b5cf6';
+
+      $('accentColor').value =
+        /^#[0-9a-fA-F]{6}$/.test(s.accentColor)
+          ? s.accentColor
+          : '#8b5cf6';
+
       $('announcement').value = s.announcement || '';
       $('heroTitle').value = s.heroTitle || '';
       $('heroDescription').value = s.heroDescription || '';
@@ -312,33 +380,51 @@
       $('copyrightPolicy').value = s.copyrightPolicy || '';
 
       document.querySelectorAll('input[name="platform"]').forEach(input => {
-        input.checked = (s.supportedPlatforms || []).includes(input.value);
+        input.checked =
+          (s.supportedPlatforms || []).includes(input.value);
       });
 
       renderFaq(s.faq || []);
-      document.documentElement.style.setProperty('--accent', $('accentColor').value);
+
+      document.documentElement.style.setProperty(
+        '--accent',
+        $('accentColor').value
+      );
     }
 
     $('accentColor').addEventListener('input', event => {
-      document.documentElement.style.setProperty('--accent', event.target.value);
+      document.documentElement.style.setProperty(
+        '--accent',
+        event.target.value
+      );
     });
 
     async function loadSettings() {
       showStatus('Loading settings…');
+
       const data = await apiRequest('/manage');
+
       currentSettings = data.settings;
       fillForm(currentSettings);
       showDashboard();
-      showStatus('Settings loaded. Last updated: ' +
-        (data.updatedAt ? new Date(data.updatedAt).toLocaleString() : 'unknown'));
+
+      showStatus(
+        'Settings loaded. Last updated: ' +
+        (data.updatedAt
+          ? new Date(data.updatedAt).toLocaleString()
+          : 'unknown')
+      );
     }
 
     $('loginForm').addEventListener('submit', async event => {
       event.preventDefault();
+
+      const loginBtn = $('loginBtn');
+      loginBtn.disabled = true;
       showStatus('Signing in…');
 
       try {
-        await apiRequest('/login', {
+        const data = await apiRequest('/login', {
           method: 'POST',
           body: JSON.stringify({
             email: $('email').value.trim(),
@@ -346,11 +432,20 @@
           })
         });
 
+        if (!data.token) {
+          throw new Error('The server did not return a login token.');
+        }
+
+        adminToken = data.token;
         $('password').value = '';
+
         await loadSettings();
       } catch (error) {
-        showStatus(error.message +
-          ' If login succeeds but settings cannot load, the browser may be blocking cross-site cookies.');
+        adminToken = null;
+        showLogin();
+        showStatus(error.message);
+      } finally {
+        loginBtn.disabled = false;
       }
     });
 
@@ -372,20 +467,28 @@
         heroTitle: $('heroTitle').value,
         heroDescription: $('heroDescription').value,
         maintenanceMode: $('maintenanceMode').checked,
+
         supportedPlatforms: Array.from(
-          document.querySelectorAll('input[name="platform"]:checked')
+          document.querySelectorAll(
+            'input[name="platform"]:checked'
+          )
         ).map(input => input.value),
-        faq: Array.from(document.querySelectorAll('.faq-item')).map(item => ({
+
+        faq: Array.from(
+          document.querySelectorAll('.faq-item')
+        ).map(item => ({
           question: item.querySelector('.faq-question').value,
           answer: item.querySelector('.faq-answer').value
         })),
+
         rules: $('rules').value,
         privacyPolicy: $('privacyPolicy').value,
         copyrightPolicy: $('copyrightPolicy').value
       };
 
+      const saveBtn = $('saveBtn');
+      saveBtn.disabled = true;
       showStatus('Saving settings…');
-      $('saveBtn').disabled = true;
 
       try {
         const data = await apiRequest('/manage', {
@@ -399,26 +502,21 @@
       } catch (error) {
         showStatus('Save failed: ' + error.message);
       } finally {
-        $('saveBtn').disabled = false;
+        saveBtn.disabled = false;
       }
     });
 
-    $('logoutBtn').addEventListener('click', async () => {
-      try {
-        await apiRequest('/logout', { method: 'POST' });
-      } catch (error) {
-        // Return to login even if the session has already expired.
-      }
-
+    $('logoutBtn').addEventListener('click', () => {
+      adminToken = null;
+      currentSettings = null;
+      $('password').value = '';
       showLogin();
       showStatus('Logged out.');
     });
 
-    // Attempt to restore an existing session.
-    loadSettings().catch(() => {
-      showLogin();
-      showStatus('Please log in to manage your website.');
-    });
+    // No saved token: require a fresh login when the page opens.
+    showLogin();
+    showStatus('Please log in to manage your website.');
   </script>
 </body>
 </html>
