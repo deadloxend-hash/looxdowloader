@@ -471,3 +471,277 @@
   </script>
 </body>
 </html>
+
+
+
+<script>
+(async function loadLooxAdminSettings() {
+  const SETTINGS_URL =
+    'https://loox-backend.vercel.app/api/admin/settings';
+
+  const $ = (selector) => document.querySelector(selector);
+
+  function addBanner(id, message, className) {
+    let banner = document.getElementById(id);
+
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = id;
+      banner.className = className;
+      banner.setAttribute('role', 'status');
+
+      const main = $('main');
+      if (main) main.prepend(banner);
+    }
+
+    banner.textContent = message;
+    return banner;
+  }
+
+  function updateText(element, value) {
+    if (element && typeof value === 'string') {
+      element.textContent = value;
+    }
+  }
+
+  function renderRules(value) {
+    const list = $('#rules ul');
+    if (!list || typeof value !== 'string' || !value.trim()) return;
+
+    list.replaceChildren();
+
+    value.split('\n').map(line => line.trim()).filter(Boolean)
+      .forEach(line => {
+        const item = document.createElement('li');
+        item.className = 'flex gap-3';
+
+        const icon = document.createElement('i');
+        icon.className = 'fa-solid fa-check rule-check mt-1';
+
+        const text = document.createElement('span');
+        text.textContent = line.replace(/^[-•]\s*/, '');
+
+        item.append(icon, text);
+        list.appendChild(item);
+      });
+  }
+
+  function renderFaq(items) {
+    const container = $('#faq .space-y-3');
+    if (!container || !Array.isArray(items)) return;
+
+    const validItems = items.filter(item =>
+      item &&
+      typeof (item.question || item.q) === 'string' &&
+      typeof (item.answer || item.a) === 'string'
+    );
+
+    if (!validItems.length) return;
+
+    container.replaceChildren();
+
+    validItems.forEach(item => {
+      const details = document.createElement('details');
+      details.className = 'faq-card rounded-xl p-4';
+
+      const summary = document.createElement('summary');
+      summary.className =
+        'font-semibold text-white flex items-center justify-between gap-4';
+
+      const question = document.createElement('span');
+      question.textContent = item.question || item.q;
+
+      const arrow = document.createElement('i');
+      arrow.className =
+        'faq-arrow fa-solid fa-chevron-down text-gray-400 text-xs';
+
+      summary.append(question, arrow);
+
+      const answer = document.createElement('p');
+      answer.className = 'text-sm text-gray-400 mt-3 leading-relaxed';
+      answer.textContent = item.answer || item.a;
+
+      details.append(summary, answer);
+      container.appendChild(details);
+    });
+  }
+
+  function renderPolicy(id, heading, value) {
+    if (typeof value !== 'string' || !value.trim()) return;
+
+    let section = document.getElementById(id);
+
+    if (!section) {
+      section = document.createElement('section');
+      section.id = id;
+      section.className =
+        'px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto pb-14';
+
+      const card = document.createElement('div');
+      card.className = 'glass-card rounded-2xl p-6 sm:p-8';
+
+      const title = document.createElement('h2');
+      title.className = 'text-2xl font-extrabold mb-4';
+      title.textContent = heading;
+
+      const paragraph = document.createElement('p');
+      paragraph.className = 'text-sm text-gray-300 leading-relaxed';
+      paragraph.style.whiteSpace = 'pre-wrap';
+      paragraph.textContent = value;
+
+      card.append(title, paragraph);
+      section.appendChild(card);
+
+      const main = $('main');
+      if (main) main.appendChild(section);
+      return;
+    }
+
+    const paragraph = section.querySelector('[data-admin-policy]');
+    if (paragraph) paragraph.textContent = value;
+  }
+
+  try {
+    const response = await fetch(SETTINGS_URL, {
+      method: 'GET',
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+      throw new Error('Settings request failed: ' + response.status);
+    }
+
+    const result = await response.json();
+    const settings = result.settings || result;
+
+    // Site name and browser title
+    if (typeof settings.siteName === 'string' &&
+        settings.siteName.trim()) {
+      const siteName = settings.siteName.trim();
+
+      document.title = siteName + ' Downloader';
+
+      const logo = $('header a[aria-label] .text-2xl');
+      updateText(logo, siteName);
+
+      const footerLogo = $('footer .text-sm.font-black');
+      updateText(footerLogo, siteName + ' DOWNLOADER');
+    }
+
+    // Announcement banner
+    if (typeof settings.announcement === 'string' &&
+        settings.announcement.trim()) {
+      addBanner(
+        'adminAnnouncement',
+        settings.announcement.trim(),
+        'relative z-20 mx-4 mt-4 rounded-xl border border-pink-500/30 bg-pink-500/10 px-4 py-3 text-center text-sm text-pink-200'
+      );
+    } else {
+      document.getElementById('adminAnnouncement')?.remove();
+    }
+
+    // Homepage heading and description
+    if (typeof settings.heroTitle === 'string' &&
+        settings.heroTitle.trim()) {
+      const heroHeading = $('#downloader h1');
+      if (heroHeading) heroHeading.textContent = settings.heroTitle;
+    }
+
+    if (typeof settings.heroDescription === 'string' &&
+        settings.heroDescription.trim()) {
+      updateText($('#downloader h1 + p'), settings.heroDescription);
+    }
+
+    // Accent color
+    if (typeof settings.accentColor === 'string' &&
+        /^#[0-9a-f]{6}$/i.test(settings.accentColor)) {
+      document.documentElement.style.setProperty(
+        '--loox-accent',
+        settings.accentColor
+      );
+
+      document.querySelectorAll('.ig-gradient-btn').forEach(button => {
+        button.style.background = settings.accentColor;
+      });
+    }
+
+    // Supported platform buttons
+    if (Array.isArray(settings.supportedPlatforms)) {
+      const normalize = value =>
+        String(value).toLowerCase().replace(/[^a-z]/g, '');
+
+      const enabled = new Set(
+        settings.supportedPlatforms.map(normalize)
+      );
+
+      const aliases = {
+        instagram: ['instagram', 'instagramreels'],
+        x: ['x', 'twitter'],
+        pinterest: ['pinterest'],
+        tiktok: ['tiktok']
+      };
+
+      document.querySelectorAll('[data-platform]').forEach(button => {
+        const platform = button.dataset.platform;
+        const isEnabled = (aliases[platform] || [platform])
+          .some(alias => enabled.has(alias));
+
+        button.hidden = !isEnabled;
+      });
+
+      const currentButton =
+        document.querySelector('[data-platform].active');
+
+      if (!currentButton || currentButton.hidden) {
+        const firstEnabled =
+          document.querySelector('[data-platform]:not([hidden])');
+
+        if (firstEnabled) firstEnabled.click();
+      }
+
+      if (!document.querySelector('[data-platform]:not([hidden])')) {
+        addBanner(
+          'noPlatformsNotice',
+          'No download platforms are currently enabled.',
+          'relative z-20 mx-4 mt-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-center text-sm text-yellow-200'
+        );
+      }
+    }
+
+    // Usage rules and FAQ
+    renderRules(settings.rules);
+    renderFaq(settings.faq);
+
+    // Additional policy text configured in Admin
+    renderPolicy('adminPrivacyPolicy', 'Privacy Policy',
+      settings.privacyPolicy);
+    renderPolicy('adminCopyrightPolicy', 'Copyright Policy',
+      settings.copyrightPolicy);
+
+    // Maintenance mode
+    if (settings.maintenanceMode === true) {
+      addBanner(
+        'maintenanceNotice',
+        'Loox is temporarily under maintenance. Please try again later.',
+        'relative z-30 mx-4 mt-4 rounded-xl border border-yellow-500/30 bg-yellow-500/10 px-4 py-3 text-center text-sm text-yellow-200'
+      );
+
+      const form = $('#downloadForm');
+      if (form) {
+        form.querySelectorAll('input, button').forEach(control => {
+          control.disabled = true;
+        });
+      }
+
+      document.querySelectorAll('[data-platform]').forEach(button => {
+        button.disabled = true;
+      });
+    }
+  } catch (error) {
+    // Keep the existing homepage and downloader usable if settings fail.
+    console.error('Could not load Loox admin settings:', error);
+  }
+})();
+</script>
+</body>
+</html>
