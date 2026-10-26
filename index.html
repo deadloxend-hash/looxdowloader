@@ -39,6 +39,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
+        :root {
+            --loox-btn-bg: linear-gradient(45deg, #833AB4, #FD1D1D, #F56040);
+        }
+
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body { font-family: Inter, sans-serif; background: #0b0f19; color: #f3f4f6; min-height: 100vh; }
@@ -53,7 +57,7 @@
         .ig-gradient-bg { background: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #FCB045 100%); }
         
         .ig-gradient-btn {
-            background: var(--loox-btn-bg, linear-gradient(45deg, #833AB4, #FD1D1D, #F56040));
+            background: var(--loox-btn-bg);
             background-size: 200% 200%;
             transition: all .25s ease;
         }
@@ -657,7 +661,6 @@
                     document.title = settings.siteName.trim() + ' Downloader';
                 }
                 
-                // Fixed Accent Color assignment using CSS Variables to preserve gradient hover states
                 if (typeof settings.accentColor === 'string' && /^#[0-9a-f]{6}$/i.test(settings.accentColor)) {
                     document.documentElement.style.setProperty('--loox-btn-bg', settings.accentColor);
                 }
