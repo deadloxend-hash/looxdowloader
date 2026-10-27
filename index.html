@@ -5,26 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0b0f19">
 
-    <!-- Google Search Console Ownership Verification -->
+    <!-- Search Engine Verification -->
     <meta name="google-site-verification" content="0ovRjdF8TJTQPFJa3OVkc1Xxcp_PHjSwUM72qeD5uCk" />
 
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Download Instagram Reels, TikTok videos, Pinterest videos and X media online with LOOX MediaGrab. Enjoy fast, easy downloads, including watermark-free options where supported.">
+    <!-- Optimized Meta Tags for Google Search -->
+    <meta name="description" content="Download Instagram Reels, TikTok, Pinterest & X videos with LOOX Media Grab. Fast, free, HD quality, and watermark-free media extraction online.">
     <meta name="keywords" content="Instagram reel downloader, X video downloader, TikTok downloader no watermark, Pinterest video saver, HD media downloader, free online video downloader">
     <meta name="robots" content="index, follow">
 
-    <!-- Social Media Open Graph Tags -->
-    <meta property="og:title" content="LOOX MediaGrab – Instagram & TikTok Downloader Without Watermark">
-    <meta property="og:description" content="Download Instagram Reels, TikTok videos, Pinterest videos and X media online with LOOX MediaGrab. Enjoy fast, easy downloads, including watermark-free options where supported.">
+    <!-- Open Graph Meta Tags (Social Media & Messaging Cards) -->
+    <meta property="og:site_name" content="LOOX Media Grab">
+    <meta property="og:title" content="LOOX Media Grab – Instagram & TikTok Downloader No Watermark">
+    <meta property="og:description" content="Download Instagram Reels, TikTok, Pinterest & X videos with LOOX Media Grab. Fast, free, HD quality, and watermark-free media extraction online.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://looxmediagrab.com/">
     
-    <title>LOOX MediaGrab – Instagram & TikTok Downloader Without Watermark</title>
+    <title>LOOX Media Grab – Instagram & TikTok Downloader No Watermark</title>
     
-    <!-- Favicon / Web Logo Icons -->
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png">
+    <!-- Site Icon & Favicons for Search Engine Result Display -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='30' fill='url(%23g)'/><defs><linearGradient id='g' x1='0%20' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%23833AB4'/><stop offset='50%' stop-color='%23FD1D1D'/><stop offset='100%' stop-color='%23F56040'/></linearGradient></defs><path d='M50 25 v35 M32 45 l18 18 l18-18 M28 72 h44' stroke='white' stroke-width='8' stroke-linecap='round' stroke-linejoin='round' fill='none'/></svg>">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Structured Data (JSON-LD) for Google Site Name Display -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "LOOX Media Grab",
+      "alternateName": ["LOOX", "LooxMediaGrab"],
+      "url": "https://looxmediagrab.com/"
+    }
+    </script>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -38,9 +51,9 @@
                             purple: '#833AB4',
                             pink: '#FD1D1D',
                             orange: '#F56040',
-                            darkBg: '#0b0f19',
-                            cardBg: '#151c2e',
-                            cardBorder: '#232d48'
+                            darkBg: '#080c14',
+                            cardBg: '#121826',
+                            cardBorder: '#1f293d'
                         }
                     },
                     fontFamily: {
@@ -59,14 +72,14 @@
 
     <style>
         :root {
-            --loox-btn-bg: linear-gradient(45deg, #833AB4, #FD1D1D, #F56040);
+            --loox-btn-bg: linear-gradient(135deg, #833AB4 0%, #FD1D1D 50%, #F56040 100%);
         }
 
         * { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
-        body { font-family: Inter, sans-serif; background: #0b0f19; color: #f3f4f6; min-height: 100vh; }
+        body { font-family: Inter, sans-serif; background: #080c14; color: #f3f4f6; min-height: 100vh; }
         
-        /* Smooth Page Entrance Animation */
+        /* Entrance animation */
         @keyframes pageEntrance {
             0% { opacity: 0; transform: translateY(16px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -76,7 +89,7 @@
         }
 
         .ig-gradient-text {
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -87,69 +100,82 @@
         .ig-gradient-btn {
             background: var(--loox-btn-bg);
             background-size: 200% 200%;
-            transition: all .25s ease;
+            transition: all .3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .ig-gradient-btn:hover {
             background-position: right center;
-            box-shadow: 0 10px 20px -5px rgba(253, 29, 29, .35);
-            transform: translateY(-1px);
+            box-shadow: 0 12px 28px -6px rgba(253, 29, 29, .45);
+            transform: translateY(-2px);
         }
         
         .glass-card {
-            background: rgba(21, 28, 46, .72);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, .09);
+            background: rgba(18, 24, 38, .75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .glass-card-glow {
+            position: relative;
+        }
+        .glass-card-glow::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 1.25rem;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(131, 58, 180, 0.4), rgba(253, 29, 29, 0.2), rgba(245, 96, 64, 0.4));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
         }
         
         .platform-btn {
-            border: 1px solid #303b55;
+            border: 1px solid #1f293d;
             background: rgba(15, 23, 42, .6);
-            color: #cbd5e1;
-            transition: all .2s ease;
+            color: #94a3b8;
+            transition: all .25s ease;
         }
         
-        .platform-btn:hover { border-color: #a855f7; color: #fff; }
+        .platform-btn:hover {
+            border-color: #a855f7;
+            color: #fff;
+            transform: translateY(-2px);
+        }
         
         .platform-btn.active {
             color: #fff;
             border-color: #d946ef;
-            background: linear-gradient(120deg, rgba(131, 58, 180, .25), rgba(253, 29, 29, .12));
-            box-shadow: 0 0 0 1px rgba(217, 70, 239, .12) inset;
+            background: linear-gradient(135deg, rgba(131, 58, 180, .3), rgba(253, 29, 29, .15));
+            box-shadow: 0 0 20px -5px rgba(217, 70, 239, .3);
         }
         
         .platform-btn.active .platform-icon { color: #f0abfc; }
         
-        .faq-card { background: rgba(21, 28, 46, .58); border: 1px solid rgba(255, 255, 255, .09); }
+        .faq-card { background: rgba(18, 24, 38, .6); border: 1px solid rgba(255, 255, 255, .08); }
         details summary { cursor: pointer; list-style: none; }
         details summary::-webkit-details-marker { display: none; }
         details[open] .faq-arrow { transform: rotate(180deg); }
-        .faq-arrow { transition: transform .2s; }
+        .faq-arrow { transition: transform .25s ease; }
         
-        @keyframes pulseGlow { 0%, 100% { opacity: .35; } 50% { opacity: .7; } }
-        .glow-bg { animation: pulseGlow 6s infinite ease-in-out; }
+        @keyframes pulseGlow { 0%, 100% { opacity: .3; transform: translate(-50%, 0) scale(1); } 50% { opacity: .6; transform: translate(-50%, -10px) scale(1.05); } }
+        .glow-bg { animation: pulseGlow 8s infinite ease-in-out; }
         
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0b0f19; }
-        ::-webkit-scrollbar-thumb { background: #232d48; border-radius: 4px; }
+        ::-webkit-scrollbar-track { background: #080c14; }
+        ::-webkit-scrollbar-thumb { background: #1f293d; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #FD1D1D; }
         
         .media-preview-card {
-            background: linear-gradient(145deg, rgba(21, 28, 46, .98), rgba(11, 15, 25, .98));
-            border: 1px solid rgba(168, 85, 247, .3);
+            background: linear-gradient(145deg, rgba(18, 24, 38, .98), rgba(8, 12, 20, .98));
+            border: 1px solid rgba(168, 85, 247, .35);
             border-radius: 18px;
             overflow: hidden;
         }
-        .media-preview-image {
-            width: 100%;
-            aspect-ratio: 16 / 10;
-            object-fit: cover;
-            background: #111827;
-            border-radius: 12px;
-        }
         .media-preview-placeholder {
             aspect-ratio: 16 / 10;
-            background: linear-gradient(135deg, #1f2937, #111827);
+            background: linear-gradient(135deg, #1e293b, #0f172a);
             border-radius: 12px;
         }
         .media-caption { white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -157,19 +183,19 @@
 </head>
 <body class="flex flex-col min-h-screen relative overflow-x-hidden selection:bg-pink-500 selection:text-white animate-entrance">
 
-    <!-- Glowing background accent -->
-    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-r from-purple-600/20 via-pink-600/20 to-orange-500/20 blur-[120px] pointer-events-none rounded-full glow-bg" aria-hidden="true"></div>
+    <!-- Ambient Glow Accent -->
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[850px] h-[380px] bg-gradient-to-r from-purple-600/25 via-pink-600/25 to-orange-500/25 blur-[130px] pointer-events-none rounded-full glow-bg" aria-hidden="true"></div>
 
-    <!-- Header -->
-    <header class="sticky top-0 z-40 w-full border-b border-gray-800/80 bg-brand-darkBg/90 backdrop-blur-md">
+    <!-- Navigation Header -->
+    <header class="sticky top-0 z-40 w-full border-b border-gray-800/80 bg-brand-darkBg/85 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-3 flex items-center justify-between gap-3">
-            <a href="#" class="flex items-center gap-3 group" aria-label="LOOX MediaGrab home">
-                <div class="w-11 h-11 rounded-2xl ig-gradient-bg flex items-center justify-center text-white shadow-lg shadow-pink-500/20 transition-transform group-hover:scale-105">
+            <a href="#" class="flex items-center gap-3.5 group" aria-label="LOOX Media Grab Home">
+                <div class="w-11 h-11 rounded-2xl ig-gradient-bg flex items-center justify-center text-white shadow-lg shadow-pink-500/25 transition-transform duration-300 group-hover:scale-105">
                     <i class="fa-solid fa-download text-xl"></i>
                 </div>
                 <div class="leading-none">
-                    <span class="block text-2xl font-black tracking-tight text-white">LOOX</span>
-                    <span class="block text-[9px] uppercase tracking-[.25em] font-bold text-gray-400 mt-1">MEDIAGRAB</span>
+                    <span class="block text-2xl font-black tracking-tight ig-gradient-text">LOOX</span>
+                    <span class="block text-[10px] uppercase tracking-[.28em] font-extrabold text-gray-300 mt-1">MEDIA GRAB</span>
                 </div>
             </a>
             <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-gray-300" aria-label="Main navigation">
@@ -180,8 +206,8 @@
                 <a href="#safety-legal" class="hover:text-pink-400 transition-colors">Safety & DMCA</a>
                 <a href="#faq" class="hover:text-pink-400 transition-colors">FAQ</a>
             </nav>
-            <a href="#platforms" class="px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-lg border border-gray-700 bg-gray-800/80 hover:bg-gray-700 text-gray-200 transition-all flex items-center gap-2">
-                <i class="fa-solid fa-layer-group"></i><span>Platforms</span>
+            <a href="#platforms" class="px-4 py-2 text-xs sm:text-sm font-semibold rounded-xl border border-gray-700 bg-gray-800/80 hover:bg-gray-700 hover:border-pink-500/50 text-gray-200 transition-all flex items-center gap-2 shadow-sm">
+                <i class="fa-solid fa-layer-group text-pink-400"></i><span>Platforms</span>
             </a>
         </div>
     </header>
@@ -189,62 +215,63 @@
     <!-- Main Content -->
     <main class="flex-grow relative z-10">
         <!-- Downloader Hero Section -->
-        <section id="downloader" class="pt-4 sm:pt-6 pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto text-center">
-            <div class="flex flex-wrap justify-center items-center gap-2 mb-4">
-                <span class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-pink-500/30 bg-pink-500/10 text-pink-300 text-xs font-semibold">
-                    <span class="flex h-2 w-2 rounded-full bg-pink-500 animate-pulse"></span> SIMPLE · ULTRA FAST · ALL DEVICES READY
+        <section id="downloader" class="pt-6 sm:pt-10 pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto text-center">
+            <!-- Badges -->
+            <div class="flex flex-wrap justify-center items-center gap-2 mb-5">
+                <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-pink-500/30 bg-pink-500/10 text-pink-300 text-xs font-semibold backdrop-blur-md">
+                    <span class="flex h-2 w-2 rounded-full bg-pink-500 animate-pulse"></span> SIMPLE · ULTRA FAST · ALL DEVICES
                 </span>
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-bold">
+                <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-bold backdrop-blur-md">
                     <i class="fa-solid fa-wand-magic-sparkles text-emerald-400"></i> NO WATERMARK HIGH QUALITY
                 </span>
             </div>
             
-            <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-white mb-4">
+            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white mb-4">
                 Your media, <span class="ig-gradient-text">one place.</span>
             </h1>
-            <p class="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-6">
-                Paste any public link from Instagram Reels, X (Twitter), Pinterest, or TikTok. LOOX MediaGrab extracts original high-definition direct media links instantly without watermarks.
+            <p class="text-base sm:text-lg text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed">
+                Paste any public link from Instagram Reels, X (Twitter), Pinterest, or TikTok. LOOX Media Grab extracts original high-definition media direct links instantly without watermarks.
             </p>
 
             <!-- Platform Selector Buttons -->
-            <div id="platforms" class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto mb-5" role="group" aria-label="Choose a platform">
-                <button type="button" class="platform-btn active rounded-xl p-4 flex flex-col items-center gap-2" data-platform="instagram" aria-pressed="true">
-                    <i class="platform-icon fa-brands fa-instagram text-2xl"></i><span class="font-semibold text-sm">Instagram Reels</span>
+            <div id="platforms" class="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-3xl mx-auto mb-6" role="group" aria-label="Choose a platform">
+                <button type="button" class="platform-btn active rounded-xl p-4 flex flex-col items-center gap-2.5" data-platform="instagram" aria-pressed="true">
+                    <i class="platform-icon fa-brands fa-instagram text-2xl"></i><span class="font-bold text-xs sm:text-sm">Instagram Reels</span>
                 </button>
-                <button type="button" class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2" data-platform="x" aria-pressed="false">
-                    <i class="platform-icon fa-brands fa-x-twitter text-2xl"></i><span class="font-semibold text-sm">X</span>
+                <button type="button" class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2.5" data-platform="x" aria-pressed="false">
+                    <i class="platform-icon fa-brands fa-x-twitter text-2xl"></i><span class="font-bold text-xs sm:text-sm">X (Twitter)</span>
                 </button>
-                <button type="button" class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2" data-platform="pinterest" aria-pressed="false">
-                    <i class="platform-icon fa-brands fa-pinterest-p text-2xl"></i><span class="font-semibold text-sm">Pinterest</span>
+                <button type="button" class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2.5" data-platform="pinterest" aria-pressed="false">
+                    <i class="platform-icon fa-brands fa-pinterest-p text-2xl"></i><span class="font-bold text-xs sm:text-sm">Pinterest</span>
                 </button>
-                <button type="button" class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2" data-platform="tiktok" aria-pressed="false">
-                    <i class="platform-icon fa-brands fa-tiktok text-2xl"></i><span class="font-semibold text-sm">TikTok</span>
+                <button type="button" class="platform-btn rounded-xl p-4 flex flex-col items-center gap-2.5" data-platform="tiktok" aria-pressed="false">
+                    <i class="platform-icon fa-brands fa-tiktok text-2xl"></i><span class="font-bold text-xs sm:text-sm">TikTok</span>
                 </button>
             </div>
 
             <!-- Input & Form Card -->
-            <div class="glass-card p-3 sm:p-4 rounded-2xl shadow-2xl border border-gray-700/60 max-w-3xl mx-auto">
+            <div class="glass-card glass-card-glow p-3.5 sm:p-5 rounded-2xl shadow-2xl border border-gray-800 max-w-3xl mx-auto">
                 <form id="downloadForm" class="space-y-3">
-                    <div class="relative flex flex-col sm:flex-row items-center gap-2">
+                    <div class="relative flex flex-col sm:flex-row items-center gap-2.5">
                         <div class="relative w-full">
                             <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
-                                <i class="fa-solid fa-link text-lg"></i>
+                                <i class="fa-solid fa-link text-lg text-pink-400"></i>
                             </div>
-                            <input type="url" id="mediaUrl" placeholder="Paste Instagram Reel link here..." class="w-full pl-11 pr-28 py-4 bg-gray-900/90 text-white placeholder-gray-500 rounded-xl border border-gray-700 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm sm:text-base" autocomplete="url" autocapitalize="off" spellcheck="false" aria-label="Media URL" required>
+                            <input type="url" id="mediaUrl" placeholder="Paste Instagram Reel link here..." class="w-full pl-11 pr-28 py-4 bg-gray-950/90 text-white placeholder-gray-500 rounded-xl border border-gray-800 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm sm:text-base shadow-inner" autocomplete="url" autocapitalize="off" spellcheck="false" aria-label="Media URL" required>
                             <div class="absolute inset-y-0 right-0 pr-2 flex items-center gap-1">
                                 <button type="button" id="clearBtn" class="hidden p-2 text-gray-400 hover:text-white transition-colors" title="Clear text" aria-label="Clear URL"><i class="fa-solid fa-xmark"></i></button>
-                                <button type="button" id="pasteBtn" class="px-2.5 py-1.5 text-xs font-semibold bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg border border-gray-600 transition-all flex items-center gap-1.5" title="Paste from clipboard"><i class="fa-regular fa-clipboard"></i><span class="hidden sm:inline">Paste</span></button>
+                                <button type="button" id="pasteBtn" class="px-3 py-1.5 text-xs font-bold bg-gray-800/90 hover:bg-gray-700 text-gray-200 rounded-lg border border-gray-700 transition-all flex items-center gap-1.5 shadow-sm" title="Paste from clipboard"><i class="fa-regular fa-clipboard text-pink-400"></i><span class="hidden sm:inline">Paste</span></button>
                             </div>
                         </div>
-                        <button type="submit" id="fetchBtn" class="w-full sm:w-auto px-8 py-4 ig-gradient-btn text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 shrink-0 text-base opacity-0 transition-opacity duration-300">
+                        <button type="submit" id="fetchBtn" class="w-full sm:w-auto px-8 py-4 ig-gradient-btn text-white font-black rounded-xl shadow-lg flex items-center justify-center gap-2 shrink-0 text-base opacity-0 transition-opacity duration-300">
                             <span id="fetchBtnText">Get Media</span><i id="fetchBtnIcon" class="fa-solid fa-arrow-right"></i>
                         </button>
                     </div>
                 </form>
 
                 <!-- Error Message Box -->
-                <div id="errorMessage" role="alert" aria-live="polite" class="hidden mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-xs sm:text-sm text-left flex items-start gap-2">
-                    <i class="fa-solid fa-circle-exclamation shrink-0 mt-0.5"></i><span id="errorText"></span>
+                <div id="errorMessage" role="alert" aria-live="polite" class="hidden mt-3 p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-xs sm:text-sm text-left flex items-start gap-2.5">
+                    <i class="fa-solid fa-circle-exclamation shrink-0 mt-0.5 text-red-400"></i><span id="errorText"></span>
                 </div>
 
                 <!-- Success Result Card Container -->
@@ -253,8 +280,8 @@
                 <p class="mt-3 text-xs text-gray-500">Only public links are processed. Private accounts, personal credentials, and copyright bypass attempts are strictly blocked.</p>
             </div>
 
-            <!-- Quick Trust Indicators -->
-            <div class="mt-5 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-gray-400">
+            <!-- Trust Indicators -->
+            <div class="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-gray-400 font-medium">
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-check text-emerald-400"></i> No Registration Needed</span>
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-amber-400"></i> Ultra Fast Engine</span>
                 <span class="flex items-center gap-1.5"><i class="fa-solid fa-ban-smoke text-pink-400"></i> Clean & Safe</span>
@@ -263,58 +290,58 @@
         </section>
 
         <!-- Key Highlights Section -->
-        <section id="features" class="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto border-t border-gray-800/60">
+        <section id="features" class="py-14 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto border-t border-gray-800/60">
             <div class="text-center mb-10">
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-white">Why Creators Choose LOOX MediaGrab</h2>
-                <p class="text-gray-400 text-sm sm:text-base mt-2 max-w-2xl mx-auto">Built for high speed, original resolution, and seamless multi-platform media access without extra software installation.</p>
+                <h2 class="text-2xl sm:text-4xl font-black text-white">Why Creators Choose LOOX Media Grab</h2>
+                <p class="text-gray-400 text-sm sm:text-base mt-2 max-w-2xl mx-auto">Built for high speed, original resolution, and seamless multi-platform media access without software installation.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                <article class="glass-card p-6 rounded-2xl border border-gray-800 hover:border-pink-500/40 transition-all">
-                    <div class="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/30 text-pink-400 flex items-center justify-center text-xl font-bold mb-4">
+                <article class="glass-card p-6 rounded-2xl border border-gray-800 hover:border-pink-500/40 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/30 text-pink-400 flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-wand-magic-sparkles"></i>
                     </div>
                     <h3 class="text-lg font-bold text-white mb-2">Original & No Watermark</h3>
-                    <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">Extract clean videos and high-res imagery directly from public sources without intrusive overlays or forced brand watermarks.</p>
+                    <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">Extract clean videos and high-res imagery directly from public sources without intrusive overlays or forced watermarks.</p>
                 </article>
 
-                <article class="glass-card p-6 rounded-2xl border border-gray-800 hover:border-purple-500/40 transition-all">
-                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xl font-bold mb-4">
+                <article class="glass-card p-6 rounded-2xl border border-gray-800 hover:border-purple-500/40 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-gauge-high"></i>
                     </div>
                     <h3 class="text-lg font-bold text-white mb-2">High-Speed Processing</h3>
                     <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">Our optimized backend resolves media metadata in seconds, returning direct download links instantly.</p>
                 </article>
 
-                <article class="glass-card p-6 rounded-2xl border border-gray-800 hover:border-orange-500/40 transition-all">
-                    <div class="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/30 text-orange-400 flex items-center justify-center text-xl font-bold mb-4">
+                <article class="glass-card p-6 rounded-2xl border border-gray-800 hover:border-orange-500/40 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/30 text-orange-400 flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-user-shield"></i>
                     </div>
                     <h3 class="text-lg font-bold text-white mb-2">100% Secure & Private</h3>
                     <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">No account signup required. We never store your search queries, download logs, or personal IP tracking data.</p>
                 </article>
 
-                <article class="glass-card p-6 rounded-2xl border border-gray-800 hover:border-emerald-500/40 transition-all">
-                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xl font-bold mb-4">
+                <article class="glass-card p-6 rounded-2xl border border-gray-800 hover:border-emerald-500/40 transition-all group">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-xl font-bold mb-4 group-hover:scale-110 transition-transform">
                         <i class="fa-solid fa-laptop-mobile"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Cross-Device Compatibility</h3>
+                    <h3 class="text-lg font-bold text-white mb-2">Cross-Device Ready</h3>
                     <p class="text-gray-400 text-xs sm:text-sm leading-relaxed">Works smoothly across iOS Safari, Android Chrome, Windows, Mac, and Linux without downloading browser extensions.</p>
                 </article>
             </div>
         </section>
 
         <!-- Supported Platforms Section -->
-        <section id="supported-platforms" class="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto border-t border-gray-800/60">
+        <section id="supported-platforms" class="py-14 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto border-t border-gray-800/60">
             <div class="text-center mb-10">
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-white">Supported Platforms & Capabilities</h2>
+                <h2 class="text-2xl sm:text-4xl font-black text-white">Supported Platforms & Capabilities</h2>
                 <p class="text-gray-400 text-sm mt-2 max-w-2xl mx-auto">Full breakdown of supported public media formats across top social networks.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Instagram Card -->
                 <div class="glass-card p-6 rounded-2xl border border-gray-800">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-yellow-500 via-red-500 to-purple-600 flex items-center justify-center text-white text-xl">
+                    <div class="flex items-center gap-3.5 mb-4">
+                        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-yellow-500 via-red-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-md">
                             <i class="fa-brands fa-instagram"></i>
                         </div>
                         <div>
@@ -323,9 +350,9 @@
                         </div>
                     </div>
                     <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                        LOOX MediaGrab allows you to easily extract public Instagram Reels, standard post videos, and high-resolution photo slides. Just paste the post URL (`/reel/`, `/p/`, `/tv/`) to view available media sources.
+                        LOOX Media Grab allows you to easily extract public Instagram Reels, standard post videos, and high-resolution photo slides. Just paste the post URL (`/reel/`, `/p/`, `/tv/`) to view available media sources.
                     </p>
-                    <ul class="text-xs text-gray-400 space-y-2">
+                    <ul class="text-xs text-gray-400 space-y-2 font-medium">
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-pink-400"></i> MP4 video format support in full original resolution</li>
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-pink-400"></i> Clean audio stream preservation</li>
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-pink-400"></i> Works with public accounts worldwide</li>
@@ -334,8 +361,8 @@
 
                 <!-- X / Twitter Card -->
                 <div class="glass-card p-6 rounded-2xl border border-gray-800">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-black border border-gray-700 flex items-center justify-center text-white text-xl">
+                    <div class="flex items-center gap-3.5 mb-4">
+                        <div class="w-11 h-11 rounded-xl bg-black border border-gray-700 flex items-center justify-center text-white text-2xl shadow-md">
                             <i class="fa-brands fa-x-twitter"></i>
                         </div>
                         <div>
@@ -344,9 +371,9 @@
                         </div>
                     </div>
                     <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                        Easily extract video files embedded inside X posts and tweets. Whether it is viral news footage, memes, or sports clips, LOOX MediaGrab provides rapid access to HD direct download sources.
+                        Easily extract video files embedded inside X posts and tweets. Whether it is viral news footage, memes, or sports clips, LOOX Media Grab provides rapid access to HD direct download sources.
                     </p>
-                    <ul class="text-xs text-gray-400 space-y-2">
+                    <ul class="text-xs text-gray-400 space-y-2 font-medium">
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-sky-400"></i> Multiple quality option detection (1080p, 720p, 480p)</li>
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-sky-400"></i> High-speed extraction directly from post links</li>
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-sky-400"></i> MP4 format for universal device playback</li>
@@ -355,8 +382,8 @@
 
                 <!-- Pinterest Card -->
                 <div class="glass-card p-6 rounded-2xl border border-gray-800">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white text-xl">
+                    <div class="flex items-center gap-3.5 mb-4">
+                        <div class="w-11 h-11 rounded-xl bg-red-600 flex items-center justify-center text-white text-2xl shadow-md">
                             <i class="fa-brands fa-pinterest-p"></i>
                         </div>
                         <div>
@@ -365,9 +392,9 @@
                         </div>
                     </div>
                     <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                        Pinterest is filled with design inspiration, recipe guides, and DIY video tutorials. LOOX MediaGrab lets you extract original HD media links directly from standard pin URLs and short links (`pin.it`).
+                        Pinterest is filled with design inspiration, recipe guides, and DIY video tutorials. LOOX Media Grab lets you extract original HD media links directly from standard pin URLs and short links (`pin.it`).
                     </p>
-                    <ul class="text-xs text-gray-400 space-y-2">
+                    <ul class="text-xs text-gray-400 space-y-2 font-medium">
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-red-400"></i> Full HD Video Pin resolution extraction</li>
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-red-400"></i> Short link (`pin.it`) auto-resolution</li>
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-red-400"></i> Preserves original image quality</li>
@@ -376,8 +403,8 @@
 
                 <!-- TikTok Card -->
                 <div class="glass-card p-6 rounded-2xl border border-gray-800">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-gray-900 border border-gray-700 flex items-center justify-center text-teal-400 text-xl">
+                    <div class="flex items-center gap-3.5 mb-4">
+                        <div class="w-11 h-11 rounded-xl bg-gray-950 border border-gray-800 flex items-center justify-center text-teal-400 text-2xl shadow-md">
                             <i class="fa-brands fa-tiktok"></i>
                         </div>
                         <div>
@@ -388,7 +415,7 @@
                     <p class="text-gray-300 text-sm leading-relaxed mb-4">
                         Save TikTok public videos without distracting watermark overlays. Perfect for content creators looking to archive their own creative works or study trending short-form content.
                     </p>
-                    <ul class="text-xs text-gray-400 space-y-2">
+                    <ul class="text-xs text-gray-400 space-y-2 font-medium">
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-teal-400"></i> Clean MP4 output without video watermark</li>
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-teal-400"></i> Supports both standard and mobile web share URLs</li>
                         <li class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-teal-400"></i> Fast server processing for instant access</li>
@@ -398,15 +425,15 @@
         </section>
 
         <!-- How It Works Section -->
-        <section id="how-it-works" class="py-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto border-t border-gray-800/60">
+        <section id="how-it-works" class="py-14 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto border-t border-gray-800/60">
             <div class="text-center mb-10">
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-white">How to Use LOOX MediaGrab</h2>
+                <h2 class="text-2xl sm:text-4xl font-black text-white">How to Use LOOX Media Grab</h2>
                 <p class="text-gray-400 text-sm mt-2">Get your desired media in 3 easy steps</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <article class="glass-card p-6 rounded-2xl relative border border-gray-800 hover:border-pink-500/40 transition-all">
-                    <span class="absolute top-4 right-4 text-3xl font-black text-gray-800">01</span>
+                    <span class="absolute top-4 right-4 text-3xl font-black text-gray-800/60">01</span>
                     <div class="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/30 text-pink-400 flex items-center justify-center text-xl font-bold mb-4">
                         <i class="fa-solid fa-copy"></i>
                     </div>
@@ -417,7 +444,7 @@
                 </article>
 
                 <article class="glass-card p-6 rounded-2xl relative border border-gray-800 hover:border-purple-500/40 transition-all">
-                    <span class="absolute top-4 right-4 text-3xl font-black text-gray-800">02</span>
+                    <span class="absolute top-4 right-4 text-3xl font-black text-gray-800/60">02</span>
                     <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center text-xl font-bold mb-4">
                         <i class="fa-solid fa-paste"></i>
                     </div>
@@ -428,7 +455,7 @@
                 </article>
 
                 <article class="glass-card p-6 rounded-2xl relative border border-gray-800 hover:border-orange-500/40 transition-all">
-                    <span class="absolute top-4 right-4 text-3xl font-black text-gray-800">03</span>
+                    <span class="absolute top-4 right-4 text-3xl font-black text-gray-800/60">03</span>
                     <div class="w-12 h-12 rounded-xl bg-orange-500/10 border border-orange-500/30 text-orange-400 flex items-center justify-center text-xl font-bold mb-4">
                         <i class="fa-solid fa-circle-down"></i>
                     </div>
@@ -441,9 +468,9 @@
         </section>
 
         <!-- Safety, Legal & DMCA Disclaimers -->
-        <section id="safety-legal" class="py-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-t border-gray-800/60">
+        <section id="safety-legal" class="py-14 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-t border-gray-800/60">
             <div class="glass-card rounded-2xl p-6 sm:p-10 border border-gray-800 space-y-8">
-                <div class="flex items-center gap-3 border-b border-gray-800 pb-5">
+                <div class="flex items-center gap-3.5 border-b border-gray-800 pb-5">
                     <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-2xl">
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
@@ -453,78 +480,78 @@
                     </div>
                 </div>
 
-                <div class="space-y-3">
+                <div class="space-y-2.5">
                     <h3 class="text-lg font-bold text-white flex items-center gap-2">
                         <i class="fa-solid fa-lock text-emerald-400 text-sm"></i> Security & User Privacy
                     </h3>
                     <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                        LOOX MediaGrab functions purely as a web utility tool that parses publicly available web links. We do not require account registration, nor do we collect passwords, personal information, or private browsing data. All link queries are processed transiently through encrypted HTTPS connections.
+                        LOOX Media Grab functions purely as a web utility tool that parses publicly available web links. We do not require account registration, nor do we collect passwords, personal information, or private browsing data. All link queries are processed transiently through encrypted HTTPS connections.
                     </p>
                 </div>
 
-                <div class="space-y-3">
+                <div class="space-y-2.5">
                     <h3 class="text-lg font-bold text-white flex items-center gap-2">
                         <i class="fa-solid fa-gavel text-emerald-400 text-sm"></i> DMCA Compliance & Copyright Protection
                     </h3>
                     <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                        LOOX MediaGrab does not host, store, copy, or redistribute copyrighted media files on its servers. All media items displayed or extracted through this service are retrieved directly from third-party Content Delivery Networks (CDNs) belonging to their respective social networks.
+                        LOOX Media Grab does not host, store, copy, or redistribute copyrighted media files on its servers. All media items displayed or extracted through this service are retrieved directly from third-party Content Delivery Networks (CDNs) belonging to their respective social networks.
                     </p>
                     <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                        We respect intellectual property rights. Users are solely responsible for ensuring they have appropriate legal rights, permissions, or creator consents before saving or reusing any content. LOOX MediaGrab strictly forbids the use of its service for copyright infringement, unauthorized commercial redistribution, or harvesting private content.
+                        We respect intellectual property rights. Users are solely responsible for ensuring they have appropriate legal rights, permissions, or creator consents before saving or reusing any content. LOOX Media Grab strictly forbids the use of its service for copyright infringement, unauthorized commercial redistribution, or harvesting private content.
                     </p>
                 </div>
 
-                <div class="space-y-3">
+                <div class="space-y-2.5">
                     <h3 class="text-lg font-bold text-white flex items-center gap-2">
                         <i class="fa-solid fa-envelope-circle-check text-emerald-400 text-sm"></i> DMCA Takedown Requests
                     </h3>
                     <p class="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                        If you are a copyright owner and believe your intellectual property has been improperly linked or indexed, please contact us with verifiable documentation. Since LOOX MediaGrab does not store files locally, removing the source link from third-party networks automatically revokes access through our utility.
+                        If you are a copyright owner and believe your intellectual property has been improperly linked or indexed, please contact us with verifiable documentation. Since LOOX Media Grab does not store files locally, removing the source link from third-party networks automatically revokes access through our utility.
                     </p>
                 </div>
             </div>
         </section>
 
         <!-- FAQ Section -->
-        <section id="faq" class="py-12 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-gray-800/60">
+        <section id="faq" class="py-14 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto border-t border-gray-800/60">
             <div class="text-center mb-10">
-                <h2 class="text-2xl sm:text-4xl font-extrabold text-white">Frequently Asked Questions</h2>
+                <h2 class="text-2xl sm:text-4xl font-black text-white">Frequently Asked Questions</h2>
                 <p class="text-gray-400 text-sm mt-2">Got questions? We have answers.</p>
             </div>
 
             <div class="space-y-4">
                 <details class="faq-card p-5 rounded-xl border border-gray-800">
-                    <summary class="flex justify-between items-center font-semibold text-white text-base">
-                        <span>Is LOOX MediaGrab completely free to use?</span>
+                    <summary class="flex justify-between items-center font-bold text-white text-base">
+                        <span>Is LOOX Media Grab completely free to use?</span>
                         <i class="faq-arrow fa-solid fa-chevron-down text-gray-400 text-sm"></i>
                     </summary>
                     <p class="text-gray-300 text-xs sm:text-sm mt-3 leading-relaxed">
-                        Yes! LOOX MediaGrab is 100% free with no hidden fees, subscription requirements, or download caps.
+                        Yes! LOOX Media Grab is 100% free with no hidden fees, subscription requirements, or download caps.
                     </p>
                 </details>
 
                 <details class="faq-card p-5 rounded-xl border border-gray-800">
-                    <summary class="flex justify-between items-center font-semibold text-white text-base">
+                    <summary class="flex justify-between items-center font-bold text-white text-base">
                         <span>Do I need to install any software or browser extensions?</span>
                         <i class="faq-arrow fa-solid fa-chevron-down text-gray-400 text-sm"></i>
                     </summary>
                     <p class="text-gray-300 text-xs sm:text-sm mt-3 leading-relaxed">
-                        No installation is necessary. LOOX MediaGrab works directly in your web browser across mobile devices, tablets, and desktop computers.
+                        No installation is necessary. LOOX Media Grab works directly in your web browser across mobile devices, tablets, and desktop computers.
                     </p>
                 </details>
 
                 <details class="faq-card p-5 rounded-xl border border-gray-800">
-                    <summary class="flex justify-between items-center font-semibold text-white text-base">
+                    <summary class="flex justify-between items-center font-bold text-white text-base">
                         <span>Why are some videos failing to process?</span>
                         <i class="faq-arrow fa-solid fa-chevron-down text-gray-400 text-sm"></i>
                     </summary>
                     <p class="text-gray-300 text-xs sm:text-sm mt-3 leading-relaxed">
-                        LOOX MediaGrab only extracts media from public posts. If the account is private, or if the post has been deleted or restricted by the creator, our extractor will not be able to retrieve the media file.
+                        LOOX Media Grab only extracts media from public posts. If the account is private, or if the post has been deleted or restricted by the creator, our extractor will not be able to retrieve the media file.
                     </p>
                 </details>
 
                 <details class="faq-card p-5 rounded-xl border border-gray-800">
-                    <summary class="flex justify-between items-center font-semibold text-white text-base">
+                    <summary class="flex justify-between items-center font-bold text-white text-base">
                         <span>Where do downloaded files go on my phone or PC?</span>
                         <i class="faq-arrow fa-solid fa-chevron-down text-gray-400 text-sm"></i>
                     </summary>
@@ -543,10 +570,10 @@
                 <div class="w-8 h-8 rounded-xl ig-gradient-bg flex items-center justify-center text-white text-sm">
                     <i class="fa-solid fa-download"></i>
                 </div>
-                <span class="text-base font-bold text-white">LOOX MediaGrab</span>
+                <span class="text-base font-bold text-white">LOOX Media Grab</span>
             </div>
             <p class="text-xs text-gray-500">
-                &copy; 2026 LOOX MediaGrab. All rights reserved. Built for public link extraction utility.
+                &copy; 2026 LOOX Media Grab. All rights reserved. Built for public link extraction utility.
             </p>
             <div class="flex items-center gap-5 text-xs text-gray-400">
                 <a href="#downloader" class="hover:text-pink-400 transition-colors">Downloader</a>
@@ -650,7 +677,6 @@
                     return;
                 }
 
-                // Simulate metadata fetch & display success result card
                 simulateFetch(url);
             });
 
@@ -664,7 +690,6 @@
                     fetchBtn.disabled = false;
                     fetchBtn.innerHTML = originalText;
 
-                    // Display preview card result
                     successMessage.innerHTML = `
                         <div class="media-preview-card p-4 sm:p-6 space-y-4">
                             <div class="flex items-center justify-between">
