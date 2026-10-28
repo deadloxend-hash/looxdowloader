@@ -294,6 +294,15 @@
                                 <button type="button" id="pasteBtn" class="px-3 py-1.5 text-xs font-bold bg-gray-800/90 hover:bg-gray-700 text-gray-200 rounded-lg border border-gray-700 transition-all flex items-center gap-1.5 shadow-sm" title="Paste from clipboard"><i class="fa-regular fa-clipboard text-pink-400"></i><span class="hidden sm:inline">Paste</span></button>
                             </div>
                         </div>
+
+                        <!-- QUALITY SELECTION DROPDOWN -->
+                        <select id="qualitySelect" class="w-full sm:w-auto px-4 py-4 bg-gray-950/90 text-white rounded-xl border border-gray-800 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm font-semibold shrink-0 cursor-pointer" aria-label="Select download quality">
+                            <option value="max">Maximum (Best)</option>
+                            <option value="1080">1080p</option>
+                            <option value="720">720p</option>
+                            <option value="360">360p</option>
+                        </select>
+
                         <button type="submit" id="fetchBtn" class="w-full sm:w-auto px-8 py-4 ig-gradient-btn text-white font-black rounded-xl shadow-lg flex items-center justify-center gap-2 shrink-0 text-base opacity-0 transition-opacity duration-300">
                             <span id="fetchBtnText">Get Media</span><i id="fetchBtnIcon" class="fa-solid fa-arrow-right"></i>
                         </button>
@@ -560,6 +569,7 @@
         const $ = id => document.getElementById(id);
         const form = $('downloadForm');
         const input = $('mediaUrl');
+        const qualitySelect = $('qualitySelect');
         const clearBtn = $('clearBtn');
         const pasteBtn = $('pasteBtn');
         const fetchBtn = $('fetchBtn');
@@ -836,17 +846,24 @@
             event.preventDefault();
             hideMessages();
             const url = input.value.trim();
+            const quality = qualitySelect ? qualitySelect.value : 'max';
             const config = platformConfig[selectedPlatform];
+
             if (!isValidPlatformUrl(url, selectedPlatform)) {
                 showError('That does not look like a valid ' + config.label + ' link. Please check the URL.');
                 return;
             }
+
+            // AUTO-CLEAR SEARCH BAR IMMEDIATELY UPON SUBMISSION
+            input.value = '';
+            toggleClearBtn();
+
             setLoading(true);
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url, platform: selectedPlatform })
+                    body: JSON.stringify({ url, platform: selectedPlatform, quality })
                 });
                 let data = {};
                 try { data = await response.json(); } catch (_) {}
@@ -924,7 +941,6 @@
                     }
                     return id;
                 } catch (_) {
-                    // Storage may be unavailable in private/restricted browser modes.
                     return (window.crypto && typeof window.crypto.randomUUID === 'function')
                         ? window.crypto.randomUUID()
                         : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
