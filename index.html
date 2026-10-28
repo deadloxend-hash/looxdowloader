@@ -295,9 +295,8 @@
                             </div>
                         </div>
 
-                        <!-- QUALITY SELECTION DROPDOWN -->
+                        <!-- QUALITY DROPDOWN (1080p, 720p, 360p) -->
                         <select id="qualitySelect" class="w-full sm:w-auto px-4 py-4 bg-gray-950/90 text-white rounded-xl border border-gray-800 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm font-semibold shrink-0 cursor-pointer" aria-label="Select download quality">
-                            <option value="max">Maximum (Best)</option>
                             <option value="1080">1080p</option>
                             <option value="720">720p</option>
                             <option value="360">360p</option>
@@ -846,7 +845,7 @@
             event.preventDefault();
             hideMessages();
             const url = input.value.trim();
-            const quality = qualitySelect ? qualitySelect.value : 'max';
+            const quality = qualitySelect ? qualitySelect.value : '1080';
             const config = platformConfig[selectedPlatform];
 
             if (!isValidPlatformUrl(url, selectedPlatform)) {
@@ -854,9 +853,7 @@
                 return;
             }
 
-            // AUTO-CLEAR SEARCH BAR IMMEDIATELY UPON SUBMISSION
-            input.value = '';
-            toggleClearBtn();
+            // SEARCH BAR KEPT INTACT (No auto-clearing on submit anymore)
 
             setLoading(true);
             try {
@@ -1098,10 +1095,10 @@
                 setSelection(Number(button.dataset.rating));
                 $('ratingFormMessage').classList.add('hidden');
             }));
-            $('ratingComment').addEventListener('input', () => {
+            $('ratingComment')->addEventListener('input', () => {
                 $('ratingCharCount').textContent = $('ratingComment').value.length + '/500';
             });
-            $('submitRatingBtn').addEventListener('click', submitRating);
+            $('submitRatingBtn')->addEventListener('click', submitRating);
             loadRatings();
         })();
     </script>
