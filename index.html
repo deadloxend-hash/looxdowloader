@@ -291,8 +291,8 @@
                             </div>
                         </div>
 
-                        <!-- QUALITY DROPDOWN (1080p Only) -->
-                        <select id="qualitySelect" class="w-full sm:w-auto px-4 py-4 bg-gray-950/90 text-white rounded-xl border border-gray-800 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm font-semibold shrink-0 cursor-pointer" aria-label="Select download quality">
+                        <!-- QUALITY DROPDOWN (Hidden by default, shown inside media card on fetch) -->
+                        <select id="qualitySelect" class="hidden w-full sm:w-auto px-4 py-4 bg-gray-950/90 text-white rounded-xl border border-gray-800 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm font-semibold shrink-0 cursor-pointer" aria-label="Select download quality">
                             <option value="1080">1080p</option>
                         </select>
 
@@ -771,9 +771,16 @@
                 details.appendChild(authorRow);
             }
 
+            // Reveal and append the quality dropdown right here inside the success card
+            if (qualitySelect) {
+                qualitySelect.classList.remove('hidden');
+                qualitySelect.className = 'mt-4 w-full sm:w-48 px-4 py-3 bg-gray-900/90 text-white rounded-xl border border-gray-700 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/25 focus:outline-none transition-all text-sm font-semibold cursor-pointer';
+                details.appendChild(qualitySelect);
+            }
+
             const downloadBtn = document.createElement('button');
             downloadBtn.type = 'button';
-            downloadBtn.className = 'inline-flex mt-5 px-6 py-3.5 rounded-xl ig-gradient-btn text-white font-bold text-sm items-center justify-center gap-2.5 cursor-pointer shadow-lg';
+            downloadBtn.className = 'inline-flex mt-4 px-6 py-3.5 rounded-xl ig-gradient-btn text-white font-bold text-sm items-center justify-center gap-2.5 cursor-pointer shadow-lg w-full sm:w-auto';
             downloadBtn.innerHTML = '<i class="fa-solid fa-download"></i> Download Video';
 
             downloadBtn.addEventListener('click', async () => {
