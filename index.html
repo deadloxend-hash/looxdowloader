@@ -200,6 +200,16 @@
             border-radius: 12px;
         }
         .media-caption { white-space: pre-wrap; overflow-wrap: anywhere; }
+    
+        /* LOOX Ratings & Reviews */
+        .rating-star { color: #475569; transition: color .15s ease, transform .15s ease; }
+        .rating-star.is-active { color: #FCAF45; }
+        .rating-star:focus-visible { outline: 2px solid #FCAF45; outline-offset: 4px; border-radius: 4px; }
+        .rating-bar-track { height: 8px; background: #263145; border-radius: 999px; overflow: hidden; }
+        .rating-bar-fill { height: 100%; width: 0; background: linear-gradient(90deg, #FCAF45, #F56040); border-radius: 999px; transition: width .25s ease; }
+        .rating-review-card { background: rgba(8, 12, 20, .62); border: 1px solid rgba(148, 163, 184, .15); }
+        .rating-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+
     </style>
 </head>
 <body class="flex flex-col min-h-screen relative overflow-x-hidden selection:bg-pink-500 selection:text-white animate-entrance">
@@ -436,6 +446,86 @@
                 </details>
             </div>
         </section>
+    
+        <!-- LOOX Ratings & Reviews -->
+        <section id="ratings" class="py-14 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto border-t border-gray-800/60">
+            <div class="text-center mb-8 sm:mb-10">
+                <span class="inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-400/10 px-3.5 py-1.5 text-xs font-bold text-amber-300 mb-4">
+                    <i class="fa-solid fa-star"></i> COMMUNITY FEEDBACK
+                </span>
+                <h2 class="text-2xl sm:text-4xl font-black text-white">Ratings &amp; Reviews</h2>
+                <p class="text-sm sm:text-base text-gray-400 mt-3 max-w-2xl mx-auto">Tried LOOX Media Grab? Share your experience and help us improve.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-6">
+                <!-- Live rating summary and distribution -->
+                <article class="glass-card rounded-2xl p-5 sm:p-7">
+                    <div class="flex flex-col sm:flex-row gap-5 sm:gap-7 sm:items-center">
+                        <div class="sm:min-w-36 sm:border-r sm:border-gray-700/70 sm:pr-6">
+                            <div class="flex items-baseline gap-2">
+                                <span id="ratingAverage" class="text-5xl font-black tracking-tight text-white">0.0</span>
+                                <span class="text-gray-500 text-lg">/ 5</span>
+                            </div>
+                            <div id="ratingAverageStars" class="flex gap-1 mt-2" aria-label="Average rating: 0 out of 5">
+                                <i class="fa-solid fa-star text-gray-700"></i><i class="fa-solid fa-star text-gray-700"></i><i class="fa-solid fa-star text-gray-700"></i><i class="fa-solid fa-star text-gray-700"></i><i class="fa-solid fa-star text-gray-700"></i>
+                            </div>
+                            <p class="text-sm text-gray-400 mt-2">Based on <strong id="ratingTotal" class="text-gray-200">0</strong> ratings</p>
+                        </div>
+                        <div class="flex-1 space-y-3" aria-label="Rating distribution">
+                            <div class="flex items-center gap-3 text-sm"><span class="w-7 shrink-0 text-gray-300">5 <i class="fa-solid fa-star text-amber-400 text-xs"></i></span><div class="rating-bar-track flex-1"><div id="ratingBar5" class="rating-bar-fill"></div></div><span id="ratingCount5" class="w-8 text-right text-gray-400 tabular-nums">0</span></div>
+                            <div class="flex items-center gap-3 text-sm"><span class="w-7 shrink-0 text-gray-300">4 <i class="fa-solid fa-star text-amber-400 text-xs"></i></span><div class="rating-bar-track flex-1"><div id="ratingBar4" class="rating-bar-fill"></div></div><span id="ratingCount4" class="w-8 text-right text-gray-400 tabular-nums">0</span></div>
+                            <div class="flex items-center gap-3 text-sm"><span class="w-7 shrink-0 text-gray-300">3 <i class="fa-solid fa-star text-amber-400 text-xs"></i></span><div class="rating-bar-track flex-1"><div id="ratingBar3" class="rating-bar-fill"></div></div><span id="ratingCount3" class="w-8 text-right text-gray-400 tabular-nums">0</span></div>
+                            <div class="flex items-center gap-3 text-sm"><span class="w-7 shrink-0 text-gray-300">2 <i class="fa-solid fa-star text-amber-400 text-xs"></i></span><div class="rating-bar-track flex-1"><div id="ratingBar2" class="rating-bar-fill"></div></div><span id="ratingCount2" class="w-8 text-right text-gray-400 tabular-nums">0</span></div>
+                            <div class="flex items-center gap-3 text-sm"><span class="w-7 shrink-0 text-gray-300">1 <i class="fa-solid fa-star text-amber-400 text-xs"></i></span><div class="rating-bar-track flex-1"><div id="ratingBar1" class="rating-bar-fill"></div></div><span id="ratingCount1" class="w-8 text-right text-gray-400 tabular-nums">0</span></div>
+                        </div>
+                    </div>
+                    <p id="ratingLoadMessage" class="text-xs text-gray-500 mt-5" role="status" aria-live="polite">Loading live ratings…</p>
+                </article>
+
+                <!-- Rating form -->
+                <article class="glass-card rounded-2xl p-5 sm:p-7">
+                    <h3 class="text-lg font-extrabold text-white">Rate your experience</h3>
+                    <p class="text-sm text-gray-400 mt-1">Choose one to five stars. A comment is optional.</p>
+                    <div class="mt-5">
+                        <p id="ratingSelectionLabel" class="text-sm font-semibold text-gray-200 mb-3">Select a rating</p>
+                        <div id="ratingStarPicker" class="flex items-center gap-2 sm:gap-3" role="group" aria-label="Choose your rating">
+                            <button type="button" class="rating-star text-3xl sm:text-4xl hover:scale-110 focus:outline-none" data-rating="1" aria-label="1 out of 5 stars" aria-pressed="false"><i class="fa-regular fa-star"></i></button>
+                            <button type="button" class="rating-star text-3xl sm:text-4xl hover:scale-110 focus:outline-none" data-rating="2" aria-label="2 out of 5 stars" aria-pressed="false"><i class="fa-regular fa-star"></i></button>
+                            <button type="button" class="rating-star text-3xl sm:text-4xl hover:scale-110 focus:outline-none" data-rating="3" aria-label="3 out of 5 stars" aria-pressed="false"><i class="fa-regular fa-star"></i></button>
+                            <button type="button" class="rating-star text-3xl sm:text-4xl hover:scale-110 focus:outline-none" data-rating="4" aria-label="4 out of 5 stars" aria-pressed="false"><i class="fa-regular fa-star"></i></button>
+                            <button type="button" class="rating-star text-3xl sm:text-4xl hover:scale-110 focus:outline-none" data-rating="5" aria-label="5 out of 5 stars" aria-pressed="false"><i class="fa-regular fa-star"></i></button>
+                        </div>
+                    </div>
+                    <label for="ratingComment" class="block text-sm font-semibold text-gray-300 mt-5 mb-2">Your comment <span class="font-normal text-gray-500">(optional)</span></label>
+                    <textarea id="ratingComment" rows="3" maxlength="500" placeholder="Write a comment (optional)…" class="w-full resize-y min-h-24 rounded-xl border border-gray-700 bg-gray-950/80 p-4 text-sm text-white placeholder-gray-500 outline-none transition focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20"></textarea>
+                    <div class="flex justify-between gap-3 mt-1 text-xs text-gray-500"><span>Don't include private information.</span><span id="ratingCharCount">0/500</span></div>
+                    <button type="button" id="submitRatingBtn" class="rating-submit ig-gradient-btn mt-5 w-full rounded-xl px-5 py-3.5 font-extrabold text-white flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i><span>Submit rating</span>
+                    </button>
+                    <p id="ratingFormMessage" class="hidden mt-3 rounded-xl border px-3 py-2.5 text-sm" role="status" aria-live="polite"></p>
+                    <p class="text-xs text-gray-500 mt-4 leading-relaxed">One rating per browser. Ratings shown here come from the LOOX ratings service.</p>
+                </article>
+            </div>
+
+            <!-- Recent written reviews -->
+            <div class="glass-card rounded-2xl p-5 sm:p-7 mt-5 lg:mt-6">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                    <div>
+                        <h3 class="text-lg sm:text-xl font-extrabold text-white">Recent reviews</h3>
+                        <p class="text-sm text-gray-400 mt-1">Comments shared by visitors</p>
+                    </div>
+                    <span id="writtenReviewCount" class="rounded-full border border-gray-700 bg-gray-900/70 px-3 py-1.5 text-xs font-bold text-gray-300">0 comments</span>
+                </div>
+                <div id="ratingReviewsList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="rating-review-card rounded-xl p-5 text-center md:col-span-2">
+                        <i class="fa-regular fa-comments text-2xl text-purple-400"></i>
+                        <p class="font-bold text-gray-200 mt-2">No reviews yet</p>
+                        <p class="text-sm text-gray-500 mt-1">Be the first to share your experience.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Footer -->
@@ -810,5 +900,195 @@
             }
         })();
     </script>
+
+    <!-- LOOX Ratings Frontend Integration -->
+    <script>
+        (() => {
+            const RATINGS_API = 'https://loox-backend-4rkg.vercel.app/api/ratings';
+            const $ = id => document.getElementById(id);
+            const state = { selected: 0, loading: false };
+            const starButtons = Array.from(document.querySelectorAll('#ratingStarPicker [data-rating]'));
+
+            function getVisitorId() {
+                const key = 'loox_rating_visitor_id';
+                try {
+                    let id = localStorage.getItem(key);
+                    if (!id) {
+                        id = (window.crypto && typeof window.crypto.randomUUID === 'function')
+                            ? window.crypto.randomUUID()
+                            : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                                const r = Math.random() * 16 | 0;
+                                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                            });
+                        localStorage.setItem(key, id);
+                    }
+                    return id;
+                } catch (_) {
+                    // Storage may be unavailable in private/restricted browser modes.
+                    return (window.crypto && typeof window.crypto.randomUUID === 'function')
+                        ? window.crypto.randomUUID()
+                        : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                            const r = Math.random() * 16 | 0;
+                            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                        });
+                }
+            }
+
+            function showFormMessage(message, success) {
+                const el = $('ratingFormMessage');
+                el.textContent = message;
+                el.className = 'mt-3 rounded-xl border px-3 py-2.5 text-sm ' +
+                    (success ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300' : 'border-red-500/30 bg-red-500/10 text-red-300');
+            }
+
+            function setSelection(value) {
+                state.selected = value;
+                starButtons.forEach(button => {
+                    const active = Number(button.dataset.rating) <= value;
+                    button.classList.toggle('is-active', active);
+                    button.setAttribute('aria-pressed', String(Number(button.dataset.rating) === value));
+                    const icon = button.querySelector('i');
+                    if (icon) icon.className = active ? 'fa-solid fa-star' : 'fa-regular fa-star';
+                });
+                $('ratingSelectionLabel').textContent = value
+                    ? value + ' out of 5 star' + (value === 1 ? '' : 's') + ' selected'
+                    : 'Select a rating';
+            }
+
+            function renderSummary(summary) {
+                const total = Number(summary.total) || 0;
+                const average = Number(summary.average) || 0;
+                $('ratingAverage').textContent = average.toFixed(1);
+                $('ratingTotal').textContent = total.toLocaleString();
+                $('ratingAverageStars').setAttribute('aria-label', 'Average rating: ' + average.toFixed(1) + ' out of 5');
+                Array.from($('ratingAverageStars').children).forEach((star, index) => {
+                    star.className = 'fa-solid fa-star ' + (index < Math.round(average) && total > 0 ? 'text-amber-400' : 'text-gray-700');
+                });
+                [5,4,3,2,1].forEach(n => {
+                    const count = Number(summary[['','one','two','three','four','five'][n]]) || 0;
+                    $('ratingCount' + n).textContent = count.toLocaleString();
+                    $('ratingBar' + n).style.width = (total ? Math.min(100, count / total * 100) : 0) + '%';
+                    $('ratingBar' + n).setAttribute('aria-label', n + ' star: ' + count + ' ratings');
+                });
+                $('ratingLoadMessage').textContent = total === 0
+                    ? 'No ratings yet. If you have tried LOOX, you can be the first to rate it.'
+                    : 'Live rating summary updated.';
+            }
+
+            function renderReviews(reviews) {
+                const list = $('ratingReviewsList');
+                list.replaceChildren();
+                const comments = Array.isArray(reviews) ? reviews.filter(review => typeof review.comment === 'string' && review.comment.trim()) : [];
+                $('writtenReviewCount').textContent = comments.length + (comments.length === 1 ? ' comment' : ' comments');
+                if (!comments.length) {
+                    const empty = document.createElement('div');
+                    empty.className = 'rating-review-card rounded-xl p-5 text-center md:col-span-2';
+                    const icon = document.createElement('i');
+                    icon.className = 'fa-regular fa-comments text-2xl text-purple-400';
+                    const heading = document.createElement('p');
+                    heading.className = 'font-bold text-gray-200 mt-2';
+                    heading.textContent = 'No reviews yet';
+                    const detail = document.createElement('p');
+                    detail.className = 'text-sm text-gray-500 mt-1';
+                    detail.textContent = 'Be the first to share your experience.';
+                    empty.append(icon, heading, detail);
+                    list.appendChild(empty);
+                    return;
+                }
+                comments.forEach(review => {
+                    const card = document.createElement('article');
+                    card.className = 'rating-review-card rounded-xl p-4 sm:p-5';
+                    const top = document.createElement('div');
+                    top.className = 'flex items-center justify-between gap-3';
+                    const name = document.createElement('p');
+                    name.className = 'font-bold text-gray-200 text-sm break-words';
+                    name.textContent = review.name || 'LOOX visitor';
+                    const date = document.createElement('time');
+                    date.className = 'text-xs text-gray-500 shrink-0';
+                    if (review.createdAt && !Number.isNaN(Date.parse(review.createdAt))) {
+                        date.dateTime = review.createdAt;
+                        date.textContent = new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+                    } else {
+                        date.textContent = '';
+                    }
+                    top.append(name, date);
+                    const stars = document.createElement('div');
+                    stars.className = 'flex gap-1 mt-2 text-sm';
+                    stars.setAttribute('aria-label', review.rating + ' out of 5 stars');
+                    for (let i = 1; i <= 5; i++) {
+                        const star = document.createElement('i');
+                        star.className = (i <= Number(review.rating) ? 'fa-solid text-amber-400' : 'fa-regular text-gray-700') + ' fa-star';
+                        stars.appendChild(star);
+                    }
+                    const comment = document.createElement('p');
+                    comment.className = 'text-sm text-gray-300 mt-3 leading-relaxed whitespace-pre-wrap break-words';
+                    comment.textContent = review.comment;
+                    card.append(top, stars, comment);
+                    list.appendChild(card);
+                });
+            }
+
+            async function loadRatings() {
+                try {
+                    const response = await fetch(RATINGS_API, { method: 'GET', cache: 'no-store' });
+                    const data = await response.json();
+                    if (!response.ok || !data.success) throw new Error(data.error || 'Could not load ratings.');
+                    renderSummary(data.summary || {});
+                    renderReviews(data.reviews || []);
+                } catch (error) {
+                    $('ratingLoadMessage').textContent = 'Ratings are temporarily unavailable. Please try again later.';
+                    console.error('LOOX ratings load failed:', error);
+                }
+            }
+
+            async function submitRating() {
+                if (state.loading) return;
+                if (!state.selected) {
+                    showFormMessage('Please select 1 to 5 stars before submitting.', false);
+                    return;
+                }
+                const comment = $('ratingComment').value.trim();
+                if (comment.length > 500) {
+                    showFormMessage('Your comment must be 500 characters or fewer.', false);
+                    return;
+                }
+                state.loading = true;
+                const button = $('submitRatingBtn');
+                button.disabled = true;
+                button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>Submitting…</span>';
+                try {
+                    const response = await fetch(RATINGS_API, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ rating: state.selected, comment, visitorId: getVisitorId() })
+                    });
+                    const data = await response.json().catch(() => ({}));
+                    if (!response.ok || !data.success) throw new Error(data.error || 'Could not submit your rating.');
+                    showFormMessage('Thank you! Your rating has been submitted.', true);
+                    $('ratingComment').value = '';
+                    $('ratingCharCount').textContent = '0/500';
+                    setSelection(0);
+                    await loadRatings();
+                } catch (error) {
+                    showFormMessage(error.message || 'Could not submit your rating. Please try again.', false);
+                } finally {
+                    state.loading = false;
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fa-solid fa-paper-plane"></i><span>Submit rating</span>';
+                }
+            }
+
+            starButtons.forEach(button => button.addEventListener('click', () => {
+                setSelection(Number(button.dataset.rating));
+                $('ratingFormMessage').classList.add('hidden');
+            }));
+            $('ratingComment').addEventListener('input', () => {
+                $('ratingCharCount').textContent = $('ratingComment').value.length + '/500';
+            });
+            $('submitRatingBtn').addEventListener('click', submitRating);
+            loadRatings();
+        })();
+    </script>
+
 </body>
 </html>
