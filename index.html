@@ -295,11 +295,9 @@
                             </div>
                         </div>
 
-                        <!-- QUALITY DROPDOWN (1080p, 720p, 360p) -->
-                        <select id="qualitySelect" class="w-full sm:w-auto px-4 py-4 bg-gray-950/90 text-white rounded-xl border border-gray-800 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm font-semibold shrink-0 cursor-pointer" aria-label="Select download quality">
-                            <option value="1080">1080p</option>
-                            <option value="720">720p</option>
-                            <option value="360">360p</option>
+                        <!-- QUALITY DROPDOWN (Hidden by default until video metadata is fetched) -->
+                        <select id="qualitySelect" class="hidden w-full sm:w-auto px-4 py-4 bg-gray-950/90 text-white rounded-xl border border-gray-800 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm font-semibold shrink-0 cursor-pointer" aria-label="Select download quality">
+                            <!-- Populated dynamically -->
                         </select>
 
                         <button type="submit" id="fetchBtn" class="w-full sm:w-auto px-8 py-4 ig-gradient-btn text-white font-black rounded-xl shadow-lg flex items-center justify-center gap-2 shrink-0 text-base opacity-0 transition-opacity duration-300">
@@ -611,6 +609,7 @@
             $('successMessage').classList.add('hidden');
             $('errorText').textContent = '';
             $('successMessage').replaceChildren();
+            qualitySelect.classList.add('hidden'); // Hide dropdown on new search
         }
 
         function setLoading(loading) {
@@ -675,8 +674,15 @@
             return '';
         }
 
-        function getMediaUrl(data) {
+        function getMediaUrl(data, selectedQuality = null) {
             const media = Array.isArray(data.media) ? data.media : [];
+            
+            // If backend returned a formats list with specific quality matches
+            if (selectedQuality && Array.isArray(data.formats)) {
+                const matched = data.formats.find(f => f.quality === selectedQuality || f.qualityLabel === selectedQuality);
+                if (matched && matched.url) return safeHttpsUrl(matched.url);
+            }
+
             const candidates = [
                 data.downloadUrl, data.download_url, data.url, data.mediaUrl, data.media_url, data.video_hd_url, data.video_url,
                 ...media.map(item => item && typeof item === 'object' ? (item.download_url || item.downloadUrl || item.url || item.video_url) : '')
@@ -777,17 +783,20 @@
                 details.appendChild(authorRow);
             }
 
-            // SMART DOWNLOAD BUTTON (Forces direct file download where possible)
+            // SMART DOWNLOAD BUTTON
             const downloadBtn = document.createElement('button');
             downloadBtn.type = 'button';
             downloadBtn.className = 'inline-flex mt-5 px-6 py-3.5 rounded-xl ig-gradient-btn text-white font-bold text-sm items-center justify-center gap-2.5 cursor-pointer shadow-lg';
             downloadBtn.innerHTML = '<i class="fa-solid fa-download"></i> Download Video';
 
             downloadBtn.addEventListener('click', async () => {
+                const chosenQuality = qualitySelect.value;
+                const activeUrl = getMediaUrl(data, chosenQuality) || mediaUrl;
+
                 downloadBtn.disabled = true;
                 downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparing Download...';
                 try {
-                    const res = await fetch(mediaUrl);
+                    const res = await fetch(activeUrl);
                     const blob = await res.blob();
                     const blobUrl = URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -798,8 +807,7 @@
                     a.remove();
                     URL.revokeObjectURL(blobUrl);
                 } catch (e) {
-                    // Fallback if browser security blocks fetch: opens in a new tab safely
-                    window.open(mediaUrl, '_blank');
+                    window.open(activeUrl, '_blank');
                 } finally {
                     downloadBtn.disabled = false;
                     downloadBtn.innerHTML = '<i class="fa-solid fa-download"></i> Download Video';
@@ -845,7 +853,6 @@
             event.preventDefault();
             hideMessages();
             const url = input.value.trim();
-            const quality = qualitySelect ? qualitySelect.value : '1080';
             const config = platformConfig[selectedPlatform];
 
             if (!isValidPlatformUrl(url, selectedPlatform)) {
@@ -853,20 +860,40 @@
                 return;
             }
 
-            // SEARCH BAR KEPT INTACT (No auto-clearing on submit anymore)
-
             setLoading(true);
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url, platform: selectedPlatform, quality })
+                    body: JSON.stringify({ url, platform: selectedPlatform })
                 });
                 let data = {};
                 try { data = await response.json(); } catch (_) {}
                 if (!response.ok) {
                     throw new Error(data.error || data.message || ('The service returned an error (' + response.status + ').'));
                 }
+
+                // POPULATE DYNAMIC QUALITIES IF RETURNED BY BACKEND
+                qualitySelect.replaceChildren();
+                if (Array.isArray(data.formats) && data.formats.length > 0) {
+                    data.formats.forEach(fmt => {
+                        const opt = document.createElement('option');
+                        opt.value = fmt.quality || fmt.qualityLabel;
+                        opt.textContent = fmt.qualityLabel || (fmt.quality + 'p');
+                        qualitySelect.appendChild(opt);
+                    });
+                    qualitySelect.classList.remove('hidden'); // Reveal dropdown
+                } else {
+                    // Fallback default options if backend returns single stream
+                    ['1080p', '720p', '360p'].forEach(q => {
+                        const opt = document.createElement('option');
+                        opt.value = q.replace('p', '');
+                        opt.textContent = q;
+                        qualitySelect.appendChild(opt);
+                    });
+                    qualitySelect.classList.remove('hidden');
+                }
+
                 const mediaUrl = getMediaUrl(data);
                 if (!mediaUrl) {
                     throw new Error(data.message || 'The service did not return a valid media link.');
@@ -1095,10 +1122,10 @@
                 setSelection(Number(button.dataset.rating));
                 $('ratingFormMessage').classList.add('hidden');
             }));
-            $('ratingComment')->addEventListener('input', () => {
+            $('ratingComment').addEventListener('input', () => {
                 $('ratingCharCount').textContent = $('ratingComment').value.length + '/500';
             });
-            $('submitRatingBtn')->addEventListener('click', submitRating);
+            $('submitRatingBtn').addEventListener('click', submitRating);
             loadRatings();
         })();
     </script>
