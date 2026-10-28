@@ -93,7 +93,6 @@
         html { scroll-behavior: smooth; }
         body { font-family: Inter, sans-serif; background: #080c14; color: #f3f4f6; min-height: 100vh; }
         
-        /* Entrance animation */
         @keyframes pageEntrance {
             0% { opacity: 0; transform: translateY(16px); }
             100% { opacity: 1; transform: translateY(0); }
@@ -201,7 +200,6 @@
         }
         .media-caption { white-space: pre-wrap; overflow-wrap: anywhere; }
     
-        /* LOOX Ratings & Reviews */
         .rating-star { color: #475569; transition: color .15s ease, transform .15s ease; }
         .rating-star.is-active { color: #FCAF45; }
         .rating-star:focus-visible { outline: 2px solid #FCAF45; outline-offset: 4px; border-radius: 4px; }
@@ -209,7 +207,6 @@
         .rating-bar-fill { height: 100%; width: 0; background: linear-gradient(90deg, #FCAF45, #F56040); border-radius: 999px; transition: width .25s ease; }
         .rating-review-card { background: rgba(8, 12, 20, .62); border: 1px solid rgba(148, 163, 184, .15); }
         .rating-submit:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
-
     </style>
 </head>
 <body class="flex flex-col min-h-screen relative overflow-x-hidden selection:bg-pink-500 selection:text-white animate-entrance">
@@ -247,7 +244,6 @@
     <main class="flex-grow relative z-10">
         <!-- Downloader Hero Section -->
         <section id="downloader" class="pt-6 sm:pt-10 pb-12 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto text-center">
-            <!-- Badges -->
             <div class="flex flex-wrap justify-center items-center gap-2 mb-5">
                 <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-pink-500/30 bg-pink-500/10 text-pink-300 text-xs font-semibold backdrop-blur-md">
                     <span class="flex h-2 w-2 rounded-full bg-pink-500 animate-pulse"></span> SIMPLE · ULTRA FAST · ALL DEVICES
@@ -295,9 +291,9 @@
                             </div>
                         </div>
 
-                        <!-- QUALITY DROPDOWN (Hidden by default until video metadata is fetched) -->
-                        <select id="qualitySelect" class="hidden w-full sm:w-auto px-4 py-4 bg-gray-950/90 text-white rounded-xl border border-gray-800 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm font-semibold shrink-0 cursor-pointer" aria-label="Select download quality">
-                            <!-- Populated dynamically -->
+                        <!-- QUALITY DROPDOWN (1080p Only) -->
+                        <select id="qualitySelect" class="w-full sm:w-auto px-4 py-4 bg-gray-950/90 text-white rounded-xl border border-gray-800 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 focus:outline-none transition-all text-sm font-semibold shrink-0 cursor-pointer" aria-label="Select download quality">
+                            <option value="1080">1080p</option>
                         </select>
 
                         <button type="submit" id="fetchBtn" class="w-full sm:w-auto px-8 py-4 ig-gradient-btn text-white font-black rounded-xl shadow-lg flex items-center justify-center gap-2 shrink-0 text-base opacity-0 transition-opacity duration-300">
@@ -555,7 +551,7 @@
 
     <!-- Main Downloader Script -->
     <script>
-        const API_URL = 'https://loox-backend.vercel.app/api/download';
+        const API_URL = 'https://loox-backend-4rkg.vercel.app/api/download';
         const platformConfig = {
             instagram: { label: 'Instagram Reels', placeholder: 'Paste Instagram Reel link here...', hosts: ['instagram.com', 'www.instagram.com', 'instagr.am', 'www.instagr.am'], path: /^\/(p|reel|reels|tv)\/[A-Za-z0-9_-]+\/?/i },
             x: { label: 'X (Twitter)', placeholder: 'Paste an X post link here...', hosts: ['x.com', 'www.x.com', 'twitter.com', 'www.twitter.com', 'mobile.twitter.com'], path: /^\/[^/]+\/status\/\d+/i },
@@ -609,7 +605,6 @@
             $('successMessage').classList.add('hidden');
             $('errorText').textContent = '';
             $('successMessage').replaceChildren();
-            qualitySelect.classList.add('hidden'); // Hide dropdown on new search
         }
 
         function setLoading(loading) {
@@ -674,15 +669,8 @@
             return '';
         }
 
-        function getMediaUrl(data, selectedQuality = null) {
+        function getMediaUrl(data) {
             const media = Array.isArray(data.media) ? data.media : [];
-            
-            // If backend returned a formats list with specific quality matches
-            if (selectedQuality && Array.isArray(data.formats)) {
-                const matched = data.formats.find(f => f.quality === selectedQuality || f.qualityLabel === selectedQuality);
-                if (matched && matched.url) return safeHttpsUrl(matched.url);
-            }
-
             const candidates = [
                 data.downloadUrl, data.download_url, data.url, data.mediaUrl, data.media_url, data.video_hd_url, data.video_url,
                 ...media.map(item => item && typeof item === 'object' ? (item.download_url || item.downloadUrl || item.url || item.video_url) : '')
@@ -783,20 +771,16 @@
                 details.appendChild(authorRow);
             }
 
-            // SMART DOWNLOAD BUTTON
             const downloadBtn = document.createElement('button');
             downloadBtn.type = 'button';
             downloadBtn.className = 'inline-flex mt-5 px-6 py-3.5 rounded-xl ig-gradient-btn text-white font-bold text-sm items-center justify-center gap-2.5 cursor-pointer shadow-lg';
             downloadBtn.innerHTML = '<i class="fa-solid fa-download"></i> Download Video';
 
             downloadBtn.addEventListener('click', async () => {
-                const chosenQuality = qualitySelect.value;
-                const activeUrl = getMediaUrl(data, chosenQuality) || mediaUrl;
-
                 downloadBtn.disabled = true;
                 downloadBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Preparing Download...';
                 try {
-                    const res = await fetch(activeUrl);
+                    const res = await fetch(mediaUrl);
                     const blob = await res.blob();
                     const blobUrl = URL.createObjectURL(blob);
                     const a = document.createElement('a');
@@ -807,7 +791,7 @@
                     a.remove();
                     URL.revokeObjectURL(blobUrl);
                 } catch (e) {
-                    window.open(activeUrl, '_blank');
+                    window.open(mediaUrl, '_blank');
                 } finally {
                     downloadBtn.disabled = false;
                     downloadBtn.innerHTML = '<i class="fa-solid fa-download"></i> Download Video';
@@ -853,6 +837,7 @@
             event.preventDefault();
             hideMessages();
             const url = input.value.trim();
+            const quality = qualitySelect ? qualitySelect.value : '1080';
             const config = platformConfig[selectedPlatform];
 
             if (!isValidPlatformUrl(url, selectedPlatform)) {
@@ -865,35 +850,13 @@
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ url, platform: selectedPlatform })
+                    body: JSON.stringify({ url, platform: selectedPlatform, quality })
                 });
                 let data = {};
                 try { data = await response.json(); } catch (_) {}
                 if (!response.ok) {
                     throw new Error(data.error || data.message || ('The service returned an error (' + response.status + ').'));
                 }
-
-                // POPULATE DYNAMIC QUALITIES IF RETURNED BY BACKEND
-                qualitySelect.replaceChildren();
-                if (Array.isArray(data.formats) && data.formats.length > 0) {
-                    data.formats.forEach(fmt => {
-                        const opt = document.createElement('option');
-                        opt.value = fmt.quality || fmt.qualityLabel;
-                        opt.textContent = fmt.qualityLabel || (fmt.quality + 'p');
-                        qualitySelect.appendChild(opt);
-                    });
-                    qualitySelect.classList.remove('hidden'); // Reveal dropdown
-                } else {
-                    // Fallback default options if backend returns single stream
-                    ['1080p', '720p', '360p'].forEach(q => {
-                        const opt = document.createElement('option');
-                        opt.value = q.replace('p', '');
-                        opt.textContent = q;
-                        qualitySelect.appendChild(opt);
-                    });
-                    qualitySelect.classList.remove('hidden');
-                }
-
                 const mediaUrl = getMediaUrl(data);
                 if (!mediaUrl) {
                     throw new Error(data.message || 'The service did not return a valid media link.');
@@ -910,7 +873,7 @@
     <!-- Admin Settings Dynamic Integration -->
     <script>
         (async function loadLooxAdminSettings() {
-            const SETTINGS_URL = 'https://loox-backend.vercel.app/api/admin/settings';
+            const SETTINGS_URL = 'https://loox-backend-4rkg.vercel.app/api/admin/settings';
             const $ = selector => document.querySelector(selector);
             
             try {
@@ -1122,10 +1085,10 @@
                 setSelection(Number(button.dataset.rating));
                 $('ratingFormMessage').classList.add('hidden');
             }));
-            $('ratingComment').addEventListener('input', () => {
+            $('ratingComment')->addEventListener('input', () => {
                 $('ratingCharCount').textContent = $('ratingComment').value.length + '/500';
             });
-            $('submitRatingBtn').addEventListener('click', submitRating);
+            $('submitRatingBtn')->addEventListener('click', submitRating);
             loadRatings();
         })();
     </script>
