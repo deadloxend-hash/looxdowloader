@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7QDR4H56G0"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-7QDR4H56G0');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0b0f19">
@@ -1092,10 +1102,10 @@
                 setSelection(Number(button.dataset.rating));
                 $('ratingFormMessage').classList.add('hidden');
             }));
-            $('ratingComment')->addEventListener('input', () => {
+            $('ratingComment').addEventListener('input', () => {
                 $('ratingCharCount').textContent = $('ratingComment').value.length + '/500';
             });
-            $('submitRatingBtn')->addEventListener('click', submitRating);
+            $('submitRatingBtn').addEventListener('click', submitRating);
             loadRatings();
         })();
     </script>
