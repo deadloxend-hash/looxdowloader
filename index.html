@@ -528,12 +528,26 @@
                     </div>
                     <span id="writtenReviewCount" class="rounded-full border border-gray-700 bg-gray-900/70 px-3 py-1.5 text-xs font-bold text-gray-300">0 comments</span>
                 </div>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                    <label for="ratingReviewSort" class="text-sm text-gray-400">Sort reviews
+                        <select id="ratingReviewSort" class="mt-1 sm:mt-0 sm:ml-2 rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white focus:border-pink-500 focus:outline-none">
+                            <option value="latest">Latest Date</option>
+                            <option value="oldest">Oldest Date</option>
+                            <option value="highest">Highest Rating</option>
+                            <option value="lowest">Lowest Rating</option>
+                        </select>
+                    </label>
+                    <p id="ratingReviewShowing" class="text-xs text-gray-500" aria-live="polite"></p>
+                </div>
                 <div id="ratingReviewsList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div class="rating-review-card rounded-xl p-5 text-center md:col-span-2">
                         <i class="fa-regular fa-comments text-2xl text-purple-400"></i>
                         <p class="font-bold text-gray-200 mt-2">No reviews yet</p>
                         <p class="text-sm text-gray-500 mt-1">Be the first to share your experience.</p>
                     </div>
+                </div>
+                <div id="ratingLoadMoreWrap" class="hidden text-center mt-5">
+                    <button type="button" id="ratingLoadMore" class="rounded-xl border border-gray-700 bg-gray-900/80 px-6 py-3 text-sm font-bold text-white transition hover:border-pink-500 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-pink-500/40">Load More Reviews</button>
                 </div>
             </div>
         </section>
@@ -995,12 +1009,44 @@
                     : 'Live rating summary updated.';
             }
 
+            const REVIEW_PAGE_SIZE = 6;
+            state.allComments = [];
+            state.visibleComments = REVIEW_PAGE_SIZE;
+
             function renderReviews(reviews) {
+                state.allComments = Array.isArray(reviews)
+                    ? reviews.filter(review => typeof review.comment === 'string' && review.comment.trim())
+                    : [];
+                state.visibleComments = REVIEW_PAGE_SIZE;
+                sortAndRenderReviews();
+            }
+
+            function sortAndRenderReviews() {
                 const list = $('ratingReviewsList');
                 list.replaceChildren();
-                const comments = Array.isArray(reviews) ? reviews.filter(review => typeof review.comment === 'string' && review.comment.trim()) : [];
-                $('writtenReviewCount').textContent = comments.length + (comments.length === 1 ? ' comment' : ' comments');
-                if (!comments.length) {
+                const comments = state.allComments.slice();
+                const sortBy = $('ratingReviewSort').value;
+                const dateValue = review => {
+                    const time = Date.parse(review.createdAt || '');
+                    return Number.isNaN(time) ? 0 : time;
+                };
+
+                comments.sort((a, b) => {
+                    if (sortBy === 'highest') return (Number(b.rating) || 0) - (Number(a.rating) || 0) || dateValue(b) - dateValue(a);
+                    if (sortBy === 'lowest') return (Number(a.rating) || 0) - (Number(b.rating) || 0) || dateValue(b) - dateValue(a);
+                    if (sortBy === 'oldest') return dateValue(a) - dateValue(b);
+                    return dateValue(b) - dateValue(a);
+                });
+
+                const total = comments.length;
+                const visible = comments.slice(0, state.visibleComments);
+                $('writtenReviewCount').textContent = total.toLocaleString() + (total === 1 ? ' comment' : ' comments');
+                $('ratingReviewShowing').textContent = total
+                    ? 'Showing ' + visible.length.toLocaleString() + ' of ' + total.toLocaleString() + ' comments'
+                    : '';
+                $('ratingLoadMoreWrap').classList.toggle('hidden', visible.length >= total || total === 0);
+
+                if (!total) {
                     const empty = document.createElement('div');
                     empty.className = 'rating-review-card rounded-xl p-5 text-center md:col-span-2';
                     const icon = document.createElement('i');
@@ -1015,7 +1061,8 @@
                     list.appendChild(empty);
                     return;
                 }
-                comments.forEach(review => {
+
+                visible.forEach(review => {
                     const card = document.createElement('article');
                     card.className = 'rating-review-card rounded-xl p-4 sm:p-5';
                     const top = document.createElement('div');
@@ -1029,17 +1076,19 @@
                         date.dateTime = review.createdAt;
                         date.textContent = new Date(review.createdAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
                     } else {
-                        date.textContent = '';
+                        date.textContent = 'Date unavailable';
                     }
                     top.append(name, date);
+
                     const stars = document.createElement('div');
                     stars.className = 'flex gap-1 mt-2 text-sm';
-                    stars.setAttribute('aria-label', review.rating + ' out of 5 stars');
+                    stars.setAttribute('aria-label', (Number(review.rating) || 0) + ' out of 5 stars');
                     for (let i = 1; i <= 5; i++) {
                         const star = document.createElement('i');
                         star.className = (i <= Number(review.rating) ? 'fa-solid text-amber-400' : 'fa-regular text-gray-700') + ' fa-star';
                         stars.appendChild(star);
                     }
+
                     const comment = document.createElement('p');
                     comment.className = 'text-sm text-gray-300 mt-3 leading-relaxed whitespace-pre-wrap break-words';
                     comment.textContent = review.comment;
@@ -1106,6 +1155,14 @@
                 $('ratingCharCount').textContent = $('ratingComment').value.length + '/500';
             });
             $('submitRatingBtn').addEventListener('click', submitRating);
+            $('ratingReviewSort').addEventListener('change', () => {
+                state.visibleComments = REVIEW_PAGE_SIZE;
+                sortAndRenderReviews();
+            });
+            $('ratingLoadMore').addEventListener('click', () => {
+                state.visibleComments += REVIEW_PAGE_SIZE;
+                sortAndRenderReviews();
+            });
             loadRatings();
         })();
     </script>
