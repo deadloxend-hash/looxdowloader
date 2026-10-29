@@ -1010,41 +1010,39 @@
             }
 
             const REVIEW_PAGE_SIZE = 6;
+            const API_REVIEW_PAGE_SIZE = 10;
             state.allComments = [];
             state.visibleComments = REVIEW_PAGE_SIZE;
+            state.reviewOffset = 0;
+            state.totalComments = 0;
+            state.hasMoreReviews = false;
+            state.reviewsLoading = false;
 
             function renderReviews(reviews) {
                 state.allComments = Array.isArray(reviews)
                     ? reviews.filter(review => typeof review.comment === 'string' && review.comment.trim())
                     : [];
                 state.visibleComments = REVIEW_PAGE_SIZE;
+                state.reviewOffset = state.allComments.length;
                 sortAndRenderReviews();
             }
 
             function sortAndRenderReviews() {
                 const list = $('ratingReviewsList');
                 list.replaceChildren();
+
+                // The API returns each page in the selected global sort order.
                 const comments = state.allComments.slice();
-                const sortBy = $('ratingReviewSort').value;
-                const dateValue = review => {
-                    const time = Date.parse(review.createdAt || '');
-                    return Number.isNaN(time) ? 0 : time;
-                };
-
-                comments.sort((a, b) => {
-                    if (sortBy === 'highest') return (Number(b.rating) || 0) - (Number(a.rating) || 0) || dateValue(b) - dateValue(a);
-                    if (sortBy === 'lowest') return (Number(a.rating) || 0) - (Number(b.rating) || 0) || dateValue(b) - dateValue(a);
-                    if (sortBy === 'oldest') return dateValue(a) - dateValue(b);
-                    return dateValue(b) - dateValue(a);
-                });
-
-                const total = comments.length;
+                const total = Math.max(state.totalComments, comments.length);
                 const visible = comments.slice(0, state.visibleComments);
                 $('writtenReviewCount').textContent = total.toLocaleString() + (total === 1 ? ' comment' : ' comments');
                 $('ratingReviewShowing').textContent = total
                     ? 'Showing ' + visible.length.toLocaleString() + ' of ' + total.toLocaleString() + ' comments'
                     : '';
-                $('ratingLoadMoreWrap').classList.toggle('hidden', visible.length >= total || total === 0);
+                $('ratingLoadMoreWrap').classList.toggle(
+                    'hidden',
+                    total === 0 || (visible.length >= total && !state.hasMoreReviews)
+                );
 
                 if (!total) {
                     const empty = document.createElement('div');
@@ -1097,13 +1095,67 @@
                 });
             }
 
+            async function fetchReviewPage({ reset = false } = {}) {
+                if (state.reviewsLoading) return false;
+                state.reviewsLoading = true;
+
+                const loadMoreButton = $('ratingLoadMore');
+                loadMoreButton.disabled = true;
+                loadMoreButton.classList.add('opacity-60', 'cursor-wait');
+
+                if (reset) {
+                    state.allComments = [];
+                    state.visibleComments = REVIEW_PAGE_SIZE;
+                    state.reviewOffset = 0;
+                    state.totalComments = 0;
+                    state.hasMoreReviews = false;
+                }
+
+                const sort = $('ratingReviewSort').value || 'latest';
+                try {
+                    const params = new URLSearchParams({
+                        offset: String(state.reviewOffset),
+                        limit: String(API_REVIEW_PAGE_SIZE),
+                        sort
+                    });
+                    const response = await fetch(RATINGS_API + '/reviews?' + params.toString(), {
+                        method: 'GET',
+                        cache: 'no-store'
+                    });
+                    const data = await response.json();
+                    if (!response.ok || !data.success || !Array.isArray(data.reviews)) {
+                        throw new Error(data.error || 'Could not load reviews.');
+                    }
+
+                    const page = data.reviews.filter(review =>
+                        review && typeof review.comment === 'string' && review.comment.trim()
+                    );
+                    state.allComments.push(...page);
+                    state.reviewOffset += data.reviews.length;
+                    state.totalComments = Number.isFinite(Number(data.total))
+                        ? Number(data.total)
+                        : state.allComments.length;
+                    state.hasMoreReviews = state.reviewOffset < state.totalComments;
+                    sortAndRenderReviews();
+                    return true;
+                } catch (error) {
+                    $('ratingLoadMessage').textContent = 'Reviews are temporarily unavailable. Please try again later.';
+                    console.error('LOOX reviews load failed:', error);
+                    return false;
+                } finally {
+                    state.reviewsLoading = false;
+                    loadMoreButton.disabled = false;
+                    loadMoreButton.classList.remove('opacity-60', 'cursor-wait');
+                }
+            }
+
             async function loadRatings() {
                 try {
                     const response = await fetch(RATINGS_API, { method: 'GET', cache: 'no-store' });
                     const data = await response.json();
                     if (!response.ok || !data.success) throw new Error(data.error || 'Could not load ratings.');
                     renderSummary(data.summary || {});
-                    renderReviews(data.reviews || []);
+                    await fetchReviewPage({ reset: true });
                 } catch (error) {
                     $('ratingLoadMessage').textContent = 'Ratings are temporarily unavailable. Please try again later.';
                     console.error('LOOX ratings load failed:', error);
@@ -1155,13 +1207,24 @@
                 $('ratingCharCount').textContent = $('ratingComment').value.length + '/500';
             });
             $('submitRatingBtn').addEventListener('click', submitRating);
-            $('ratingReviewSort').addEventListener('change', () => {
-                state.visibleComments = REVIEW_PAGE_SIZE;
-                sortAndRenderReviews();
+            $('ratingReviewSort').addEventListener('change', async () => {
+                await fetchReviewPage({ reset: true });
             });
-            $('ratingLoadMore').addEventListener('click', () => {
-                state.visibleComments += REVIEW_PAGE_SIZE;
-                sortAndRenderReviews();
+            $('ratingLoadMore').addEventListener('click', async () => {
+                // Reveal already-loaded reviews first; request another page only when needed.
+                if (state.visibleComments < state.allComments.length) {
+                    state.visibleComments = Math.min(
+                        state.visibleComments + REVIEW_PAGE_SIZE,
+                        state.allComments.length
+                    );
+                    sortAndRenderReviews();
+                    return;
+                }
+
+                if (state.hasMoreReviews) {
+                    state.visibleComments += REVIEW_PAGE_SIZE;
+                    await fetchReviewPage();
+                }
             });
             loadRatings();
         })();
