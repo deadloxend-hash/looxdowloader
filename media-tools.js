@@ -37,12 +37,53 @@ function youtubePicker(data){
  controls.append(select,a);card.append(controls,note);output.appendChild(card);
  return true;
 }
-function mediaList(data){const entries=Array.isArray(data.media)?data.media:[];const fallback=data.downloadUrl||data.url;const candidates=entries.length?entries:[{url:fallback}];const seen=new Set();let count=0;
-for(const m of candidates){const u=safe(m.url||m.download_url||m.downloadUrl||m.video_url);if(!u||seen.has(u))continue;seen.add(u);count++;const a=document.createElement('article');const ext=String(m.ext||'').toLowerCase();const isHls=ext==='m3u8'||/\.m3u8(?:\?|$)/i.test(u);const type=String(m.type||'').toLowerCase();const info=[m.quality||m.height&&(m.height+'p'),ext||(/\.mp4(?:\?|$)/i.test(u)?'MP4':isHls?'HLS':''),type].filter(Boolean).join(' • ');a.appendChild(text('p',info||'Available media file','loox-muted'));
-a.appendChild(link(isHls?'Open HLS playlist':'Open or save media',u));
-if(isHls)a.appendChild(text('p','This is a streaming playlist, not a ready-to-download MP4. Use an HLS-capable player with appropriate permissions.','loox-muted'));
-output.appendChild(a)}
-if(!count)output.appendChild(text('p','No accessible media file was returned. Please try a different public link.','loox-muted'));
+function mediaList(data){
+ const entries=Array.isArray(data.media)?data.media:[];
+ const fallback=data.downloadUrl||data.url;
+ const candidates=entries.length?entries:[{url:fallback}];
+ const seen=new Set(),items=[];
+ for(const m of candidates){
+  const url=safe(m.url||m.download_url||m.downloadUrl||m.video_url);
+  if(!url||seen.has(url))continue;seen.add(url);
+  const ext=String(m.ext||'').toLowerCase();
+  const type=String(m.type||'').toLowerCase();
+  const audio=type.includes('audio')||m.vcodec==='none'||m.has_video===false||['m4a','mp3','aac','opus','ogg','wav'].includes(ext);
+  const image=type.includes('image')||['jpg','jpeg','png','webp','gif'].includes(ext);
+  const h=Number(m.height||m.resolution_height)||Number((String(m.quality||m.resolution||'').match(/(?:^|\\D)(144|240|360|480|720|1080|1440|2160|4320)p?(?:\\D|$)/)||[])[1])||0;
+  const hls=ext==='m3u8'||/\\.m3u8(?:\\?|$)/i.test(url);
+  const label=h?(h===1440?'2K':h===2160?'4K':h===4320?'8K':h+'p'):String(m.quality||m.resolution||m.format_note||'').trim();
+  const bitrate=Number(m.abr||m.tbr)||0;
+  const category=image?'image':audio?'audio':'video';
+  const quality=label||((audio&&bitrate)?Math.round(bitrate)+' kb/s':ext?ext.toUpperCase():'Available file');
+  const key=category+'|'+quality.toLowerCase()+'|'+ext;
+  const score=(hls?0:10)+(ext==='mp4'?4:0)+(m.acodec&&m.acodec!=='none'?2:0);
+  const existing=items.findIndex(x=>x.key===key);
+  const item={url,ext,hls,category,quality,score,m,key};
+  if(existing<0)items.push(item);else if(score>items[existing].score)items[existing]=item;
+ }
+ if(!items.length){output.appendChild(text('p','No accessible media file was returned. Please try a different public link.','loox-muted'));return}
+ const card=document.createElement('article');card.className='loox-quality-card';
+ card.appendChild(text('h3','Choose available media'));
+ card.appendChild(text('p','Select a format returned by the source. Only available options are listed.','loox-muted'));
+ const controls=document.createElement('div');controls.className='loox-quality-controls';
+ const select=document.createElement('select');select.className='loox-quality-select';select.setAttribute('aria-label','Available media quality and format');
+ const groupNames={video:'Video',audio:'Audio',image:'Image'};
+ for(const category of ['video','audio','image']){
+  const subset=items.filter(x=>x.category===category).sort((a,b)=>(Number(b.m.height)||0)-(Number(a.m.height)||0));
+  if(!subset.length)continue;
+  const group=document.createElement('optgroup');group.label=groupNames[category];
+  for(const item of subset){const option=document.createElement('option');option.value=String(items.indexOf(item));option.textContent=item.quality+(item.ext?' · '+item.ext.toUpperCase():'');group.appendChild(option)}
+  select.appendChild(group);
+ }
+ const a=link('Open or save selected media',items[Number(select.value)].url);a.className='loox-quality-download';
+ const note=text('p','','loox-quality-note');
+ function refresh(){
+  const item=items[Number(select.value)];if(!item)return;
+  a.href=item.url;
+  a.textContent=item.hls?'Open selected playlist':'Open or save selected media';
+  note.textContent=item.hls?'This is a streaming playlist, not a ready-to-download file.':(item.m.acodec==='none'||item.m.has_audio===false?'This video may not contain audio.':'The file and quality depend on the source. Save only content you have permission to use.');
+ }
+ select.addEventListener('change',refresh);refresh();controls.append(select,a);card.append(controls,note);output.appendChild(card);
 }
 form.addEventListener('submit',async e=>{e.preventDefault();output.replaceChildren();setState('Processing your request…',true);try{
 if(form.matches('[data-download-form]')){const url=form.querySelector('input').value.trim();if(!safe(url))throw new Error('Please enter a valid HTTPS media URL.');const data=await request('/api/download',{url,platform:form.dataset.platform,quality:'1080'});if(data.thumbnail&&safe(data.thumbnail)){const img=document.createElement('img');img.src=data.thumbnail;img.loading='lazy';img.alt='Media preview';output.appendChild(img)}if(data.title)output.appendChild(text('h3',data.title));if(form.dataset.platform==='youtube'){if(!youtubePicker(data))mediaList(data)}else mediaList(data);setState('Results ready. Choose a returned media link.',false)}
