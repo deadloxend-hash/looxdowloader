@@ -33,9 +33,9 @@
       ['sitemap.html','Site Map','fa-solid fa-sitemap','sitemap']]}
   ];
   const langList=[
-    ['en','🇬🇧','English'],['ur','🇵🇰','اردو'],['ar','🇸🇦','العربية'],
+    ['en','🇬🇧','English'],['ar','🇸🇦','العربية'],
     ['es','🇪🇸','Español'],['fr','🇫🇷','Français'],['de','🇩🇪','Deutsch'],
-    ['hi','🇮🇳','हिन्दी'],['pt','🇧🇷','Português'],['tr','🇹🇷','Türkçe'],
+    ['pt','🇧🇷','Português'],['tr','🇹🇷','Türkçe'],
     ['id','🇮🇩','Bahasa Indonesia']
   ];
   const esc=s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -44,9 +44,8 @@
   sidebar.innerHTML='<div class="loox-sidebar-top"><span class="loox-sidebar-caption">LOOX MEDIA GRAB</span><button type="button" class="loox-sidebar-close" data-sidebar-close aria-label="Close menu"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>'
     +'<div class="loox-sidebar-scroll"><a class="loox-nav-item'+(current==='index.html'?' is-current':'')+'" href="/"><i class="fa-solid fa-house" aria-hidden="true"></i><span data-i18n="home">All Downloaders</span></a>'
     +groups.map(g=>'<details class="loox-nav-section" data-nav-section="'+g.key+'" name="loox-sidebar-sections"'+(activeGroup===g.key?' open':'')+'><summary aria-label="Toggle '+g.label+'"><i class="'+g.icon+'" aria-hidden="true"></i><span data-i18n="'+g.key+'">'+g.label+'</span><i class="fa-solid fa-chevron-down loox-nav-chevron" aria-hidden="true"></i></summary><div class="loox-nav-section-body">'+g.links.map(menuLink).join('')+'</div></details>').join('')
-    +'<div class="loox-sidebar-tools"><a class="loox-nav-item'+(current==='settings.html'?' is-current':'')+'" href="/settings.html"'+(current==='settings.html'?' aria-current="page"':'')+'><i class="fa-solid fa-gear" aria-hidden="true"></i><span data-i18n="settings">Settings</span></a>'
-    +'<button class="loox-language-button" type="button" data-language-toggle aria-controls="looxLanguageDialog" aria-expanded="false"><i class="fa-solid fa-globe" aria-hidden="true"></i><span data-i18n="language">Language</span><small data-current-language>English</small><i class="fa-solid fa-chevron-down loox-language-chevron" aria-hidden="true"></i></button></div>'
-    +'<p class="loox-sidebar-fineprint">Only save media you have permission to use. Independent service, not affiliated with these platforms.</p></div>';
+    +'</div><div class="loox-sidebar-tools"><a class="loox-nav-item'+(current==='settings.html'?' is-current':'')+'" href="/settings.html"'+(current==='settings.html'?' aria-current="page"':'')+'><i class="fa-solid fa-gear" aria-hidden="true"></i><span data-i18n="settings">Settings</span></a>'
+    +'<button class="loox-language-button" type="button" data-language-toggle aria-controls="looxLanguageDialog" aria-expanded="false"><i class="fa-solid fa-globe" aria-hidden="true"></i><span data-i18n="language">Language</span><small data-current-language>English</small><i class="fa-solid fa-chevron-down loox-language-chevron" aria-hidden="true"></i></button></div>';
   sidebar.classList.add('loox-nav-ready');
   sidebar.querySelector('[data-sidebar-close]')?.addEventListener('click',()=>{document.body.classList.remove('loox-sidebar-open');document.querySelectorAll('[data-sidebar-toggle]').forEach(b=>b.setAttribute('aria-expanded','false'))});
   sidebar.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>document.body.classList.remove('loox-sidebar-open')));
@@ -60,7 +59,9 @@
   overlay.innerHTML='<section class="loox-lang-card" role="dialog" aria-modal="true" aria-labelledby="looxLanguageTitle"><div class="loox-lang-header"><div><h2 id="looxLanguageTitle"><i class="fa-solid fa-globe" aria-hidden="true"></i> Choose language</h2><p>Select your preferred navigation language</p></div><button class="loox-lang-close" type="button" data-lang-close aria-label="Close language selector"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>'
     +'<div class="loox-lang-list" role="group" aria-label="Available languages">'+langList.map(l=>'<button class="loox-language-choice loox-lang-option" type="button" data-language="'+l[0]+'" aria-pressed="false"><span class="loox-lang-flag" aria-hidden="true">'+l[1]+'</span><span class="loox-lang-name" dir="auto">'+esc(l[2])+'</span><span class="loox-lang-radio" aria-hidden="true"></span></button>').join('')+'</div>'
     +'<p class="loox-lang-note">Navigation labels change instantly. Full article translations are not yet available.</p></section>';
-  document.body.appendChild(overlay);
+  document.documentElement.appendChild(overlay);
+  // Guard the selector against mobile browsers where the body is animated or transformed.
+  // The overlay is attached to <html> so its fixed position remains viewport-relative.
   const settingsSelect=document.getElementById('looxLangSelect');
   if(settingsSelect){
     const trigger=document.createElement('button');
@@ -71,7 +72,7 @@
   }
   const names=Object.fromEntries(langList.map(l=>[l[0],l[2]]));
   let activeTrigger=null;
-  function locale(){try{return localStorage.getItem('loox-language')||'en'}catch{return'en'}}
+  function locale(){try{const value=localStorage.getItem('loox-language')||'en';return names[value]?value:'en'}catch{return'en'}}
   function remember(v){try{localStorage.setItem('loox-language',v)}catch{}}
   function sync(){
     const currentLocale=locale(),name=names[currentLocale]||'English';
