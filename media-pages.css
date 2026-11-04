@@ -1,0 +1,51 @@
+/* Shared MediaGrab layout — the homepage and every tool use one sidebar style. */
+.loox-menu-trigger{display:inline-flex;align-items:center;justify-content:center;gap:.6rem;border:1px solid #334155;border-radius:12px;background:#151d2b;color:#f8fafc;padding:.75rem;cursor:pointer;min-height:43px;min-width:43px}
+.loox-menu-trigger:hover{border-color:#ec4899;background:#243046}
+.loox-sidebar{position:fixed;z-index:60;top:73px;bottom:0;left:0;width:246px;background:#0b111f;border-right:1px solid #273143;overflow-y:auto;overscroll-behavior:contain;padding:14px 12px 28px;scrollbar-width:thin}
+.loox-sidebar-label{font-size:.68rem;color:#94a3b8;font-weight:800;letter-spacing:.16em;padding:9px 14px}
+.loox-sidebar-heading{margin-top:13px}
+.loox-nav-item{display:flex;align-items:center;gap:13px;padding:11px 14px;border-radius:12px;color:#cbd5e1;text-decoration:none;font-weight:650;font-size:.875rem;border:1px solid transparent}
+.loox-nav-item i{width:18px;text-align:center;color:#a78bfa;flex-shrink:0}
+.loox-nav-item:hover,.loox-nav-item:focus-visible{color:white;background:#1c2536;border-color:#334155}
+.loox-nav-item.is-current{color:white;background:linear-gradient(120deg,#562c6d,#46203d);border-color:#8b4788}
+.loox-side-note{font-size:.73rem;color:#94a3b8;padding:18px 12px;line-height:1.65}
+.loox-sidebar-scrim{display:none}
+body.loox-has-sidebar main,body.loox-has-sidebar footer{margin-left:246px}
+.loox-grid-card{display:flex;flex-direction:column;gap:9px;padding:22px;background:rgba(18,24,38,.8);border:1px solid #263247;border-radius:18px;text-decoration:none;transition:border-color .2s,transform .2s}
+.loox-grid-card:hover{border-color:#c76db3;transform:translateY(-2px)}
+.loox-grid-card .loox-card-icon{display:flex;width:45px;height:45px;align-items:center;justify-content:center;border-radius:12px;background:rgba(190,85,247,.14);color:#f9a8d4;font-size:20px}
+.loox-grid-card h3{color:white;font-size:1.05rem;font-weight:800}
+.loox-grid-card p{font-size:.81rem;line-height:1.6;color:#9ca3af}
+.loox-grid-card .loox-card-link{font-size:.8rem;font-weight:750;color:#f9a8d4;margin-top:auto;padding-top:7px}
+.loox-tool-shell{max-width:1140px;margin:0 auto;padding:32px 22px 84px;min-height:75vh}
+.loox-card{background:rgba(18,24,38,.82);border:1px solid #29364e;border-radius:20px;padding:25px}
+.loox-accent{background:linear-gradient(105deg,#b87cf7,#fd6c99,#ff9c62);-webkit-background-clip:text;background-clip:text;color:transparent}
+.loox-input{width:100%;min-width:0;background:#090f1d;color:#fff;border:1px solid #39465b;border-radius:12px;padding:15px 16px;outline:none}
+.loox-input:focus{border-color:#ec4899;box-shadow:0 0 0 3px rgba(236,72,153,.12)}
+.loox-btn{border:0;border-radius:12px;padding:15px 21px;background:linear-gradient(110deg,#833ab4,#fd1d1d,#f56040);font-weight:800;color:white;cursor:pointer}
+.loox-btn:disabled{opacity:.6;cursor:wait}
+.loox-muted{color:#a6b1c5;line-height:1.8}
+.loox-prose h2{font-size:1.4rem;color:#fff;font-weight:850;line-height:1.25;margin:35px 0 12px}
+.loox-prose h3{color:#f8fafc;font-size:1.06rem;font-weight:800;margin:21px 0 8px}
+.loox-prose p,.loox-prose li{color:#b3bdd0;line-height:1.8;font-size:.95rem}
+.loox-prose ol{list-style:decimal;padding-left:24px}
+.loox-prose li{margin-bottom:12px}
+.loox-prose details{background:#141c2a;padding:15px 19px;border-radius:12px;border:1px solid #29364e;margin:9px 0}
+.loox-prose summary{color:#e7eaf2;font-weight:750;cursor:pointer}
+.loox-prose details p{margin-top:9px}
+.loox-results a{display:inline-flex;align-items:center;gap:7px;color:#fbcfe8;word-break:break-all;text-decoration:underline;text-underline-offset:4px}
+.loox-results article{padding:17px;border:1px solid #314158;border-radius:12px;background:#101827;margin-top:12px;overflow:hidden}
+.loox-results img{max-width:160px;max-height:125px;object-fit:cover;border-radius:10px}
+.loox-status:empty{display:none}
+.loox-status{color:#dbeafe;font-size:.9rem;margin-top:14px;line-height:1.6}
+.loox-breadcrumb{font-size:.81rem;color:#9ca3af;margin-bottom:20px}
+.loox-breadcrumb a{color:#f9a8d4}
+@media(max-width:1100px){
+  .loox-sidebar{top:0;z-index:90;transform:translateX(-105%);transition:transform .22s ease;box-shadow:15px 0 50px rgba(0,0,0,.5);padding-top:22px}
+  body.loox-sidebar-open .loox-sidebar{transform:translateX(0)}
+  body.loox-has-sidebar main,body.loox-has-sidebar footer{margin-left:0}
+  body.loox-sidebar-open .loox-sidebar-scrim{display:block;position:fixed;z-index:89;inset:0;background:rgba(0,0,0,.65);border:0;cursor:pointer}
+}
+@media(min-width:1101px){.loox-menu-trigger{display:none}}
+@media(max-width:640px){.loox-tool-shell{padding:22px 14px 58px}.loox-card{padding:18px}.loox-prose h2{font-size:1.24rem}}
+@media(prefers-reduced-motion:reduce){.loox-sidebar,.loox-grid-card{transition:none}}
