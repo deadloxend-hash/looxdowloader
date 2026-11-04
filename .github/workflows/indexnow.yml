@@ -1,0 +1,30 @@
+name: Notify IndexNow after Pages deployment
+on:
+  workflow_run:
+    workflows: ["pages build and deployment"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      all_pages:
+        description: "Notify IndexNow about all public pages (use only after meaningful site-wide changes)"
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  indexnow:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout deployed site
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+      - name: Notify participating search engines of changed URLs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_EVENT: ${{ github.event_name }}
+          DEPLOY_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+          FORCE_ALL: ${{ inputs.all_pages || false }}
+        run: node .github/scripts/notify-indexnow.mjs
