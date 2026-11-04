@@ -1,0 +1,41 @@
+# LOOX Media Grab
+> Independent browser-based media downloader directory and practical guides. The tools check supported public video/photo links and return available files or streaming URLs. Availability is not guaranteed.
+
+Website: https://looxmediagrab.com/
+Support: deadloxend@gmail.com
+Language: English; some navigation labels are offered in additional languages.
+Not affiliated with YouTube, Meta, Instagram, TikTok, X, Pinterest, Likee or RuTube.
+
+## Main tools
+- [All media tools](https://looxmediagrab.com/)
+- [Instagram Reels and post downloader](https://looxmediagrab.com/instagram-reels-downloader.html)
+- [Facebook public video/Reel downloader](https://looxmediagrab.com/facebook-video-downloader.html)
+- [TikTok public video downloader](https://looxmediagrab.com/tiktok-video-downloader.html)
+- [Pinterest public media downloader](https://looxmediagrab.com/pinterest-downloader.html)
+- [X / Twitter media downloader](https://looxmediagrab.com/twitter-video-downloader.html)
+- [YouTube public video format finder](https://looxmediagrab.com/youtube-video-downloader.html)
+- [Likee clip downloader](https://looxmediagrab.com/likee-video-downloader.html)
+- [RuTube HLS stream finder](https://looxmediagrab.com/rutube-video-downloader.html)
+- [YouTube search](https://looxmediagrab.com/youtube-search.html)
+- [Song identifier](https://looxmediagrab.com/shazam-song-finder.html)
+
+## Practical documentation
+- [Download guides](https://looxmediagrab.com/guides.html)
+- [YouTube watch-link guide](https://looxmediagrab.com/how-to-download-youtube-videos.html)
+- [YouTube Shorts guide](https://looxmediagrab.com/how-to-download-youtube-shorts.html)
+- [YouTube audio and MP3 limits](https://looxmediagrab.com/youtube-audio-formats-guide.html)
+- [MP4, WebM, MP3 and HLS formats](https://looxmediagrab.com/media-formats.html)
+- [Troubleshooting downloader errors](https://looxmediagrab.com/troubleshooting.html)
+- [FAQ](https://looxmediagrab.com/faq.html)
+
+## Trust and support
+- [About](https://looxmediagrab.com/about.html)
+- [Contact](https://looxmediagrab.com/contact.html)
+- [Help Center](https://looxmediagrab.com/help.html)
+- [Security](https://looxmediagrab.com/security.html)
+- [Privacy](https://looxmediagrab.com/privacy-policy.html)
+- [Terms](https://looxmediagrab.com/terms-of-use.html)
+- [Copyright and reporting](https://looxmediagrab.com/copyright-dmca.html)
+
+## Important limitations
+Only media you own or have the rights and authorization to download should be saved. Public access does not imply permission. Content restricted by account privacy, region, deletion, paywalls or DRM is not supported. Some video formats have separate audio, and RuTube may return HLS playlists rather than MP4. The song identifier is not an audio download service.
