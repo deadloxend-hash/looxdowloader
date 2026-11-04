@@ -8,7 +8,7 @@
 <meta property="og:title" content="Identify a Song From Audio or Video | LOOX Media Grab"><meta property="og:description" content="Try identifying a song using a public direct audio or video file URL. Learn what kinds of links work with music recognition.">
 <meta property="og:url" content="https://looxmediagrab.com/shazam-song-finder.html"><meta property="og:image" content="https://looxmediagrab.com/banner.png">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/png" href="/banner.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -31,6 +31,35 @@
   <a class="loox-nav-item " href="/youtube-search.html" ><i class="fa-solid fa-magnifying-glass"></i><span>YouTube Search</span></a>
   <a class="loox-nav-item is-current" href="/shazam-song-finder.html" aria-current="page"><i class="fa-solid fa-music"></i><span>Song Identifier</span></a>
   <p class="loox-side-note">Only save content you own or have permission to download. Independent utility; not affiliated with these platforms.</p>
+<div class="loox-sidebar-label loox-sidebar-heading" data-i18n="guides">GUIDES &amp; HELP</div>
+<a class="loox-nav-item" href="/guides.html"><i class="fa-solid fa-book-open"></i><span data-i18n="guidespage">Download Guides</span></a>
+<a class="loox-nav-item" href="/help.html"><i class="fa-solid fa-circle-question"></i><span data-i18n="help">Help Center</span></a>
+<a class="loox-nav-item" href="/faq.html"><i class="fa-solid fa-comments"></i><span data-i18n="faq">FAQ</span></a>
+<a class="loox-nav-item" href="/contact.html"><i class="fa-regular fa-envelope"></i><span data-i18n="contact">Contact</span></a>
+<div class="loox-sidebar-label loox-sidebar-heading" data-i18n="legal">ABOUT &amp; LEGAL</div>
+<a class="loox-nav-item" href="/about.html"><i class="fa-solid fa-circle-info"></i><span data-i18n="about">About Us</span></a>
+<a class="loox-nav-item" href="/privacy-policy.html"><i class="fa-solid fa-user-shield"></i><span data-i18n="privacy">Privacy Policy</span></a>
+<a class="loox-nav-item" href="/terms-of-use.html"><i class="fa-solid fa-file-contract"></i><span data-i18n="terms">Terms of Use</span></a>
+<a class="loox-nav-item" href="/copyright-dmca.html"><i class="fa-solid fa-scale-balanced"></i><span data-i18n="copyright">Copyright & DMCA</span></a>
+<a class="loox-nav-item" href="/security.html"><i class="fa-solid fa-lock"></i><span data-i18n="security">Security</span></a>
+<a class="loox-nav-item" href="/sitemap.html"><i class="fa-solid fa-sitemap"></i><span data-i18n="sitemap">Site Map</span></a>
+<div class="loox-sidebar-tools">
+<a class="loox-nav-item" href="/settings.html"><i class="fa-solid fa-gear"></i><span data-i18n="settings">Settings</span></a>
+<button type="button" class="loox-language-button" data-language-toggle aria-controls="looxLanguageMenu" aria-expanded="false"><i class="fa-solid fa-globe"></i><span data-i18n="language">Language</span><small data-current-language>English</small><i class="fa-solid fa-chevron-down loox-language-chevron"></i></button>
+<div id="looxLanguageMenu" class="loox-language-menu" hidden>
+<button class="loox-language-choice" data-language="en" aria-pressed="false" type="button">English</button>
+<button class="loox-language-choice" data-language="ur" aria-pressed="false" type="button">اردو</button>
+<button class="loox-language-choice" data-language="ar" aria-pressed="false" type="button">العربية</button>
+<button class="loox-language-choice" data-language="es" aria-pressed="false" type="button">Español</button>
+<button class="loox-language-choice" data-language="fr" aria-pressed="false" type="button">Français</button>
+<button class="loox-language-choice" data-language="de" aria-pressed="false" type="button">Deutsch</button>
+<button class="loox-language-choice" data-language="hi" aria-pressed="false" type="button">हिन्दी</button>
+<button class="loox-language-choice" data-language="pt" aria-pressed="false" type="button">Português</button>
+<button class="loox-language-choice" data-language="tr" aria-pressed="false" type="button">Türkçe</button>
+<button class="loox-language-choice" data-language="id" aria-pressed="false" type="button">Bahasa Indonesia</button>
+<p class="loox-language-note">Interface labels are translated; in-depth guides remain in English.</p>
+</div>
+</div>
 </aside><button type="button" class="loox-sidebar-scrim" aria-label="Close menu" data-close-sidebar></button><main class="loox-tool-shell"><div class="loox-breadcrumb"><a href="/">Home</a> / Song Identifier</div><div style="max-width:850px">
  <p style="color:#f9a8d4;font-size:.8rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase"><i class="fa-solid fa-music"></i> Identify songs in public audio clips</p>
  <h1 style="font-size:clamp(2.1rem,5vw,3.5rem);line-height:1.13;margin:14px 0 17px"><span class="loox-accent">Identify a Song</span> From a Clip</h1>
@@ -43,4 +72,12 @@
  </div><article class="loox-prose">
  <h2>How song identification works</h2><ol><li>Find a direct, publicly accessible HTTPS URL pointing to audio or video media.</li><li>Paste it into the input and select Identify song.</li><li>When a match is available, review the song title, artist and other available track information.</li></ol><h2>What kind of URL should I use?</h2><p>A direct audio or video file link, such as a publicly accessible MP3, M4A or MP4, is the right input. A typical Instagram, YouTube or TikTok post URL is a web page—not necessarily a direct media file—so it may not work. The recognition service analyzes audio rather than downloading the song.</p><h2>If the song cannot be recognized</h2><p>Speech, loud background noise, very short clips or unknown recordings may prevent a match. Try a longer section that clearly contains the music. There is no guarantee that every track can be identified.</p><h2>FAQ</h2><details><summary>Can this identify songs in video files?</summary><p>It can attempt recognition from accessible video media URLs when the service can extract audio.</p></details><details><summary>Does this download MP3 music?</summary><p>No. This is an identification tool. It returns song details when a match is found.</p></details>
  <h2>Other LOOX Media Grab tools</h2><p><a href="/" style="color:#f9a8d4">See all downloaders and media utilities</a>.</p>
- </article></div></main><footer><p>LOOX Media Grab is an independent tool, not affiliated with the platforms listed. Only save content you have permission to download. Availability and formats vary.</p><p>© <span id="looxCopyright">2026</span> LOOX Media Grab</p></footer><script src="/media-nav.js" defer></script><script src="/media-tools.js" defer></script></body></html>
+ </article></div></main><footer class="loox-global-footer" role="contentinfo">
+<div class="loox-footer-inner"><div class="loox-footer-top">
+<div class="loox-footer-brand-wrap"><a class="loox-footer-brand" href="/">LOOX <span style="color:#f472b6">MEDIA GRAB</span></a>
+<p class="loox-footer-desc">A simple browser-based directory of media tools, public-link downloaders and practical guides. Availability depends on the original platform. Please respect creators and platform terms.</p></div>
+<div class="loox-footer-col"><h2>Popular tools</h2><a href="/youtube-video-downloader.html">YouTube Downloader</a><a href="/instagram-reels-downloader.html">Instagram Reels</a><a href="/facebook-video-downloader.html">Facebook Videos</a><a href="/tiktok-video-downloader.html">TikTok Downloader</a><a href="/pinterest-downloader.html">Pinterest Pins</a><a href="/twitter-video-downloader.html">X / Twitter</a></div>
+<div class="loox-footer-col"><h2 data-i18n="guides">Guides &amp; help</h2><a href="/guides.html" data-i18n="guidespage">Download Guides</a><a href="/how-to-download-youtube-videos.html">YouTube video guide</a><a href="/how-to-download-youtube-shorts.html">YouTube Shorts guide</a><a href="/youtube-audio-formats-guide.html">YouTube audio formats</a><a href="/faq.html" data-i18n="faq">FAQ</a><a href="/help.html" data-i18n="help">Help Center</a><a href="/contact.html" data-i18n="contact">Contact</a></div>
+<div class="loox-footer-col"><h2 data-i18n="legal">About &amp; legal</h2><a href="/about.html" data-i18n="about">About Us</a><a href="/privacy-policy.html" data-i18n="privacy">Privacy Policy</a><a href="/terms-of-use.html" data-i18n="terms">Terms of Use</a><a href="/copyright-dmca.html" data-i18n="copyright">Copyright &amp; DMCA</a><a href="/security.html" data-i18n="security">Security</a><a href="/sitemap.html" data-i18n="sitemap">Site Map</a><a href="/settings.html" data-i18n="settings">Settings</a></div>
+</div><div class="loox-footer-bottom"><p>© <span id="looxFooterYear">2026</span> LOOX Media Grab. All rights reserved.</p><p>Independent service. Not affiliated with YouTube, Instagram, Facebook, TikTok, Pinterest, X or other platforms. No rights circumvention.</p></div></div></footer><script src="/media-nav.js" defer></script><script src="/media-tools.js" defer></script><script src="/media-preferences.js" defer></script>
+</body></html>
