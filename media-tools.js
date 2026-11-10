@@ -6,7 +6,19 @@ const safe=(v)=>{try{const u=new URL(v);return u.protocol==='https:'?u.href:null
 const text=(tag,value,classes)=>{const el=document.createElement(tag);if(classes)el.className=classes;el.textContent=String(value||'');return el};
 function setState(message,loading){status.textContent=message||'';button.disabled=!!loading;button.setAttribute('aria-busy',String(!!loading))}
 async function request(path,payload){const response=await fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json().catch(()=>({}));if(!response.ok||data.success===false)throw new Error(data.error||'Could not complete your request.');return data}
-function link(label,url){const a=text('a',label);a.href=url;a.target='_blank';a.rel='noopener noreferrer';return a}
+function link(label,url){const a=text('a',label);a.href=url;a.rel='noopener noreferrer';return a}
+function qualityMenu(options,initial,onPick){
+ const wrap=document.createElement('div');wrap.className='loox-custom-quality';
+ const trigger=document.createElement('button');trigger.type='button';trigger.className='loox-custom-quality-trigger';trigger.setAttribute('aria-haspopup','listbox');trigger.setAttribute('aria-expanded','false');
+ const current=document.createElement('span');current.className='loox-custom-quality-label';const arrow=document.createElement('span');arrow.className='loox-custom-quality-chevron';arrow.textContent='⌄';trigger.append(current,arrow);
+ const panel=document.createElement('div');panel.className='loox-custom-quality-menu';panel.role='listbox';panel.hidden=true;
+ const close=()=>{panel.hidden=true;trigger.setAttribute('aria-expanded','false')};
+ options.forEach((entry,i)=>{const item=document.createElement('button');item.type='button';item.className='loox-custom-quality-option';item.role='option';item.setAttribute('aria-selected',String(i===initial));item.textContent=entry.label;item.addEventListener('click',()=>{current.textContent=entry.label;Array.from(panel.children).forEach((n,j)=>n.setAttribute('aria-selected',String(i===j)));close();onPick(i)});panel.appendChild(item)});
+ current.textContent=options[initial].label;
+ trigger.addEventListener('click',()=>{const open=panel.hidden;document.querySelectorAll('.loox-custom-quality-menu').forEach(n=>n.hidden=true);document.querySelectorAll('.loox-custom-quality-trigger').forEach(n=>n.setAttribute('aria-expanded','false'));panel.hidden=!open;trigger.setAttribute('aria-expanded',String(open))});
+ document.addEventListener('pointerdown',event=>{if(!wrap.contains(event.target))close()});
+ wrap.addEventListener('keydown',event=>{if(event.key==='Escape')close()});wrap.append(trigger,panel);return wrap;
+}
 function youtubePicker(data){
  const entries=Array.isArray(data.media)?data.media:[];
  const heights=[144,240,360,480,720,1080,1440,2160,4320];
@@ -27,15 +39,16 @@ function youtubePicker(data){
  card.appendChild(text('h3','Choose video quality'));
  card.appendChild(text('p','Only available resolutions are shown. Downloads use a secure temporary link; some high-quality formats may be video-only.','loox-muted'));
  const controls=document.createElement('div');controls.className='loox-quality-controls';
- const select=document.createElement('select');select.className='loox-quality-select';select.setAttribute('aria-label','Available video resolution');
+ const heightsAvailable=[...byHeight.keys()].sort((a,b)=>b-a);
  const label=h=>h===1440?'2K':h===2160?'4K':h===4320?'8K':h+'p';
- [...byHeight.keys()].sort((a,b)=>b-a).forEach(h=>{const o=document.createElement('option');o.value=String(h);o.textContent=label(h)+(byHeight.get(h).ext?' · '+byHeight.get(h).ext.toUpperCase():'')+(byHeight.get(h).m.has_audio===false?' · Video only':'');select.appendChild(o)});
- const a=link('Download selected quality',byHeight.get(Number(select.value)).url);a.className='loox-quality-download';a.setAttribute('download','');
+ const options=heightsAvailable.map(h=>({label:label(h)+(byHeight.get(h).ext?' · '+byHeight.get(h).ext.toUpperCase():'')+(byHeight.get(h).m.has_audio===false?' · Video only':'')}));
+ const preferred=heightsAvailable.findIndex(h=>byHeight.get(h).m.has_audio===true);
+ let selectedHeight=heightsAvailable[preferred>=0?preferred:0];
+ const a=link('Download video',byHeight.get(selectedHeight).url);a.className='loox-quality-download';
  const note=text('p','','loox-quality-note');
- function refresh(){const v=byHeight.get(Number(select.value));a.href=v.url;note.textContent=v.isHls?'Streaming playlist: requires an HLS-capable player.':(v.m.has_audio===false?'Video-only stream. No sound; may not play in your phone\'s default player. Use a compatible player or separately merge audio and video.':v.m.has_audio===true?'Contains audio and video according to provider metadata; download availability is not guaranteed.':'Audio and phone playback compatibility have not been verified by the provider.')}
- const playable=[...byHeight.keys()].filter(h=>byHeight.get(h).m.has_audio===true).sort((a,b)=>b-a);if(playable.length)select.value=String(playable[0]);
- select.addEventListener('change',refresh);refresh();
- controls.append(select,a);card.append(controls,note);output.appendChild(card);
+ function refresh(){const v=byHeight.get(selectedHeight);a.href=v.url;note.textContent=v.isHls?'Streaming playlist, not a downloadable file.':v.m.has_audio===false?'Video-only stream: audio must be merged separately.':v.m.has_audio===true?'Video and audio reported by provider.':'Audio and playback support are not verified by the provider.'}
+ const picker=qualityMenu(options,preferred>=0?preferred:0,i=>{selectedHeight=heightsAvailable[i];refresh()});
+ refresh();controls.append(picker,a);card.append(controls,note);output.appendChild(card);
  return true;
 }
 function mediaList(data){
@@ -55,7 +68,7 @@ function mediaList(data){
   const label=h?(h===1440?'2K':h===2160?'4K':h===4320?'8K':h+'p'):String(m.quality||m.resolution||m.format_note||'').trim();
   const bitrate=Number(m.abr||m.tbr)||0;
   const category=image?'image':audio?'audio':'video';
-  const quality=label||((audio&&bitrate)?Math.round(bitrate)+' kb/s':ext?ext.toUpperCase():'Available file');
+  const quality=label||((audio&&bitrate)?Math.round(bitrate)+' kb/s':'Original quality');
   const key=category+'|'+quality.toLowerCase()+'|'+ext;
   const score=(hls?0:10)+(ext==='mp4'?4:0)+(m.acodec&&m.acodec!=='none'?2:0);
   const existing=items.findIndex(x=>x.key===key);
@@ -67,24 +80,15 @@ function mediaList(data){
  card.appendChild(text('h3','Choose available media'));
  card.appendChild(text('p','Select a format returned by the source. Only available options are listed.','loox-muted'));
  const controls=document.createElement('div');controls.className='loox-quality-controls';
- const select=document.createElement('select');select.className='loox-quality-select';select.setAttribute('aria-label','Available media quality and format');
- const groupNames={video:'Video',audio:'Audio',image:'Image'};
- for(const category of ['video','audio','image']){
-  const subset=items.filter(x=>x.category===category).sort((a,b)=>(Number(b.m.height)||0)-(Number(a.m.height)||0));
-  if(!subset.length)continue;
-  const group=document.createElement('optgroup');group.label=groupNames[category];
-  for(const item of subset){const option=document.createElement('option');option.value=String(items.indexOf(item));option.textContent=item.quality+(item.ext?' · '+item.ext.toUpperCase():'');group.appendChild(option)}
-  select.appendChild(group);
- }
- const a=link('Open or save selected media',items[Number(select.value)].url);a.className='loox-quality-download';
+ const ordered=items.filter(x=>x.category==='video').concat(items.filter(x=>x.category==='audio'),items.filter(x=>x.category==='image'));
+ const options=ordered.map(item=>({label:(item.quality==='Available file'?'Original quality':item.quality)+(item.ext?' · '+item.ext.toUpperCase():'')+(item.m.has_audio===false?' · Video only':'')}));
+ let selected=0;
+ const a=link('Download now',ordered[0].url);a.className='loox-quality-download';
  const note=text('p','','loox-quality-note');
- function refresh(){
-  const item=items[Number(select.value)];if(!item)return;
-  a.href=item.url;
-  a.textContent=item.hls?'Open selected playlist':'Open or save selected media';
-  note.textContent=item.hls?'This is a streaming playlist, not a ready-to-download file.':(item.m.acodec==='none'||item.m.has_audio===false?'This video may not contain audio.':'The file and quality depend on the source. Save only content you have permission to use.');
- }
- select.addEventListener('change',refresh);refresh();controls.append(select,a);card.append(controls,note);output.appendChild(card);
+ function refresh(){const item=ordered[selected];a.href=item.url;a.textContent=item.hls?'Open streaming playlist':'Download now';note.textContent=item.hls?'Streaming playlist; not a standalone download.':item.m.has_audio===false?'Video-only format: may not include sound.':'Original quality is the source file provided; availability depends on the provider.'}
+ const picker=qualityMenu(options,0,index=>{selected=index;refresh()});
+ refresh();controls.append(picker,a);card.append(controls,note);
+ output.appendChild(card);
 }
 form.addEventListener('submit',async e=>{e.preventDefault();output.replaceChildren();setState('Processing your request…',true);try{
 if(form.matches('[data-download-form]')){const url=form.querySelector('input').value.trim();if(!safe(url))throw new Error('Please enter a valid HTTPS media URL.');const data=await request('/api/download',{url,platform:form.dataset.platform,quality:'1080'});if(data.thumbnail&&safe(data.thumbnail)){const img=document.createElement('img');img.src=data.thumbnail;img.loading='lazy';img.alt='Media preview';output.appendChild(img)}if(data.title)output.appendChild(text('h3',data.title));if(form.dataset.platform==='youtube'){if(!youtubePicker(data))mediaList(data)}else mediaList(data);setState(form.dataset.platform==='youtube'?'Formats found. Some are video-only or may fail to play; links expire after 10 minutes.':'Results ready. Choose a returned media link.',false)}
