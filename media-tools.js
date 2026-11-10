@@ -19,7 +19,7 @@ function youtubePicker(data){
   if(type==='audio'||type==='audio_only'||type==='none'||m.vcodec==='none'||m.has_video===false||ext==='m4a'||ext==='mp3'||ext==='aac'||ext==='opus')continue;
   const height=parseHeight(m);if(!height||!heights.includes(height))continue;
   const isHls=ext==='m3u8'||/\\.m3u8(?:\\?|$)/i.test(u);
-  const score=(isHls?0:10)+(ext==='mp4'?4:0)+(m.acodec&&m.acodec!=='none'?2:0);
+  const score=(isHls?0:10)+(ext==='mp4'?4:0)+(m.has_audio===true?20:0)+(m.has_audio===false?-10:0);
   if(!byHeight.has(height)||score>byHeight.get(height).score)byHeight.set(height,{url:u,ext,isHls,score,m});
  }
  if(!byHeight.size)return false;
@@ -29,10 +29,11 @@ function youtubePicker(data){
  const controls=document.createElement('div');controls.className='loox-quality-controls';
  const select=document.createElement('select');select.className='loox-quality-select';select.setAttribute('aria-label','Available video resolution');
  const label=h=>h===1440?'2K':h===2160?'4K':h===4320?'8K':h+'p';
- [...byHeight.keys()].sort((a,b)=>b-a).forEach(h=>{const o=document.createElement('option');o.value=String(h);o.textContent=label(h)+(byHeight.get(h).ext?' · '+byHeight.get(h).ext.toUpperCase():'');select.appendChild(o)});
+ [...byHeight.keys()].sort((a,b)=>b-a).forEach(h=>{const o=document.createElement('option');o.value=String(h);o.textContent=label(h)+(byHeight.get(h).ext?' · '+byHeight.get(h).ext.toUpperCase():'')+(byHeight.get(h).m.has_audio===false?' · Video only':'');select.appendChild(o)});
  const a=link('Download selected quality',byHeight.get(Number(select.value)).url);a.className='loox-quality-download';a.setAttribute('download','');
  const note=text('p','','loox-quality-note');
- function refresh(){const v=byHeight.get(Number(select.value));a.href=v.url;note.textContent=v.isHls?'Streaming playlist: requires an HLS-capable player.':(v.m.acodec==='none'||v.m.has_audio===false?'Video-only format: audio may need to be merged separately.':'Availability and audio depend on the source.')}
+ function refresh(){const v=byHeight.get(Number(select.value));a.href=v.url;note.textContent=v.isHls?'Streaming playlist: requires an HLS-capable player.':(v.m.has_audio===false?'Video-only stream. No sound; may not play in your phone\'s default player. Use a compatible player or separately merge audio and video.':v.m.has_audio===true?'Contains audio and video according to provider metadata; download availability is not guaranteed.':'Audio and phone playback compatibility have not been verified by the provider.')}
+ const playable=[...byHeight.keys()].filter(h=>byHeight.get(h).m.has_audio===true).sort((a,b)=>b-a);if(playable.length)select.value=String(playable[0]);
  select.addEventListener('change',refresh);refresh();
  controls.append(select,a);card.append(controls,note);output.appendChild(card);
  return true;
@@ -86,7 +87,7 @@ function mediaList(data){
  select.addEventListener('change',refresh);refresh();controls.append(select,a);card.append(controls,note);output.appendChild(card);
 }
 form.addEventListener('submit',async e=>{e.preventDefault();output.replaceChildren();setState('Processing your request…',true);try{
-if(form.matches('[data-download-form]')){const url=form.querySelector('input').value.trim();if(!safe(url))throw new Error('Please enter a valid HTTPS media URL.');const data=await request('/api/download',{url,platform:form.dataset.platform,quality:'1080'});if(data.thumbnail&&safe(data.thumbnail)){const img=document.createElement('img');img.src=data.thumbnail;img.loading='lazy';img.alt='Media preview';output.appendChild(img)}if(data.title)output.appendChild(text('h3',data.title));if(form.dataset.platform==='youtube'){if(!youtubePicker(data))mediaList(data)}else mediaList(data);setState(form.dataset.platform==='youtube'?'Video ready. Choose a quality to download; links expire after 10 minutes.':'Results ready. Choose a returned media link.',false)}
+if(form.matches('[data-download-form]')){const url=form.querySelector('input').value.trim();if(!safe(url))throw new Error('Please enter a valid HTTPS media URL.');const data=await request('/api/download',{url,platform:form.dataset.platform,quality:'1080'});if(data.thumbnail&&safe(data.thumbnail)){const img=document.createElement('img');img.src=data.thumbnail;img.loading='lazy';img.alt='Media preview';output.appendChild(img)}if(data.title)output.appendChild(text('h3',data.title));if(form.dataset.platform==='youtube'){if(!youtubePicker(data))mediaList(data)}else mediaList(data);setState(form.dataset.platform==='youtube'?'Formats found. Some are video-only or may fail to play; links expire after 10 minutes.':'Results ready. Choose a returned media link.',false)}
 else if(form.matches('[data-search-form]')){const query=form.querySelector('input').value.trim(),filter=form.querySelector('select').value;const data=await request('/api/youtube-search',{query,filter});for(const r of data.results||[]){const u=safe(r.url);if(!u)continue;const a=document.createElement('article');if(safe(r.thumbnail)){const img=document.createElement('img');img.src=r.thumbnail;img.alt='Video thumbnail';img.loading='lazy';a.appendChild(img)}const h=text('h3',r.title);a.appendChild(h);a.appendChild(text('p',[r.author,r.kind].filter(Boolean).join(' • '),'loox-muted'));a.appendChild(link('Open on YouTube',u));output.appendChild(a)}setState(output.children.length?'Search complete.':'No results found for that query.',false)}
 else{const url=form.querySelector('input').value.trim();if(!safe(url))throw new Error('Enter a direct HTTPS URL to a public audio or video file.');const data=await request('/api/song-identify',{url});if(safe(data.coverart)){const img=document.createElement('img');img.src=data.coverart;img.alt='Album artwork';output.appendChild(img)}output.appendChild(text('h3',data.title||'No confirmed title'));for(const k of ['artist','album','label'])if(data[k])output.appendChild(text('p',k[0].toUpperCase()+k.slice(1)+': '+data[k],'loox-muted'));setState(data.title||data.artist?'Possible song match found.':'The service returned no confirmed match.',false)}
 }catch(err){setState(err.message||'Request failed. Please try again.',false)}finally{button.disabled=false;button.setAttribute('aria-busy','false')}});
